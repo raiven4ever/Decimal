@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 import decimal.operations.ArithmeticBasics;
 
@@ -40,10 +41,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
      * This field is immutable and never {@code null}.
      */
 	private final BigDecimal value;
-	
-	// =======================
-	// Constructors
-	// =======================
 
 	/**
 	 * Creates a new {@code Decimal} instance wrapping the specified
@@ -104,10 +101,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal(double value) {
 	    this.value = new BigDecimal(value);
 	}
-	
-	// =======================
-	// Class conversions
-	// =======================
 
 	/**
 	 * Returns the underlying {@link BigDecimal} value wrapped by this
@@ -238,10 +231,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return builder.toString();
 	}
 
-	// =======================
-	// Arithmetic Basics
-	// =======================
-
 	/**
 	 * Returns a new {@code Decimal} whose value is
 	 * {@code (this + addend)}, using the supplied {@link MathContext}.
@@ -291,11 +280,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return ArithmeticBasics.division(this, divisor, context);
 	}
 
-
-	// =======================
-	// Arithmetic Basics (default context)
-	// =======================
-
 	/**
 	 * Returns a new {@code Decimal} whose value is
 	 * {@code (this + addend)}, using the default {@link MathContext}.
@@ -340,10 +324,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal divide(Decimal divisor) {
 	    return divide(divisor, DEFAULT_CONTEXT);
 	}
-
-	// =======================
-	// Comparison operations
-	// =======================
 
 	/**
 	 * Compares this {@code Decimal} with the specified {@code Decimal}
@@ -432,10 +412,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public boolean greaterThanOrEqualTo(Decimal other) {
 	    return compareTo(other) >= 0;
 	}
-	
-	// =======================
-	// Unary Operations
-	// =======================
 
 	/**
 	 * Returns a new {@code Decimal} whose value is the negation of this
@@ -475,10 +451,59 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal round(MathContext context) {
 	    return new Decimal(value.round(context));
 	}
+	
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * with its scale set to the specified value, using the given rounding mode
+	 * if necessary.
+	 *
+	 * <p>This is equivalent to calling
+	 * {@link BigDecimal#setScale(int, RoundingMode)} on the underlying
+	 * {@link BigDecimal}.</p>
+	 *
+	 * <p><strong>Developer note:</strong> The {@link ArithmeticException}
+	 * is rethrown so that the stack trace originates from {@code Decimal}
+	 * instead of {@code BigDecimal}, keeping the wrapper API self-contained.</p>
+	 *
+	 * @param newScale the scale of the result (number of digits to the right of the decimal point)
+	 * @param mode the rounding mode to apply if rounding is necessary
+	 * @return a {@code Decimal} whose scale is set to {@code newScale}
+	 * @throws ArithmeticException if rounding is required but the rounding
+	 *         mode is {@link RoundingMode#UNNECESSARY}
+	 */
+	public Decimal setScale(int newScale, RoundingMode mode) {
+	    try {
+	        return new Decimal(value.setScale(newScale, mode));
+	    } catch (ArithmeticException e) {
+	        throw new ArithmeticException(e.toString());
+	    }
+	}
 
-	// =======================
-	// Object nicety
-	// =======================
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * rounded to the nearest integer value towards positive infinity.
+	 *
+	 * <p>This is equivalent to calling
+	 * {@code setScale(0, RoundingMode.CEILING)}.</p>
+	 *
+	 * @return a {@code Decimal} rounded upward to the nearest integer
+	 */
+	public Decimal ceiling() {
+	    return setScale(0, RoundingMode.CEILING);
+	}
+
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * rounded to the nearest integer value towards negative infinity.
+	 *
+	 * <p>This is equivalent to calling
+	 * {@code setScale(0, RoundingMode.FLOOR)}.</p>
+	 *
+	 * @return a {@code Decimal} rounded downward to the nearest integer
+	 */
+	public Decimal floor() {
+	    return setScale(0, RoundingMode.FLOOR);
+	}
 
 	/**
 	 * Compares this {@code Decimal} with the specified object for equality.
