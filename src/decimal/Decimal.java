@@ -64,16 +64,27 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Creates a new {@code Decimal} from the specified string
 	 * representation.
 	 *
-	 * <p>The string must conform to the syntax accepted by
+	 * <p>The input string must conform to the syntax accepted by
 	 * {@link BigDecimal#BigDecimal(String)}. Leading and trailing
 	 * whitespace is permitted and will be ignored.</p>
+	 *
+	 * <p><strong>Developer note:</strong> If the string cannot be parsed,
+	 * a {@link NumberFormatException} is thrown. This constructor
+	 * re-throws the exception so that the stack trace originates
+	 * from {@code Decimal}, rather than {@code BigDecimal}, making
+	 * the wrapper feel more self-contained.</p>
 	 *
 	 * @param value the string representation of the decimal value
 	 * @throws NumberFormatException if {@code value} is not a valid
 	 *         representation of a {@code BigDecimal}
 	 */
 	public Decimal(String value) {
-	    this.value = new BigDecimal(value);
+	    try {
+	        this.value = new BigDecimal(value);
+	    } catch (NumberFormatException e) {
+	        // Re-throw so the exception appears to come from Decimal
+	        throw new NumberFormatException(e.toString());
+	    }
 	}
 
 	/**
@@ -420,6 +431,49 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public boolean greaterThanOrEqualTo(Decimal other) {
 	    return compareTo(other) >= 0;
+	}
+	
+	// =======================
+	// Unary Operations
+	// =======================
+
+	/**
+	 * Returns a new {@code Decimal} whose value is the negation of this
+	 * {@code Decimal}.
+	 *
+	 * <p>This is equivalent to multiplying the value by {@code -1}.</p>
+	 *
+	 * @return a {@code Decimal} representing {@code -this}
+	 */
+	public Decimal negate() {
+	    return new Decimal(value.negate());
+	}
+
+	/**
+	 * Returns this {@code Decimal} unchanged.
+	 *
+	 * <p><strong>Developer note:</strong> This method exists mainly for
+	 * symmetry with {@link #negate()}, so that unary plus and unary minus
+	 * can both be expressed explicitly.</p>
+	 *
+	 * @return this {@code Decimal} instance
+	 */
+	public Decimal plus() { // it’s just here so that negate is not alone
+	    return this;
+	}
+
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * rounded according to the supplied {@link MathContext}.
+	 *
+	 * <p>The result is equivalent to calling
+	 * {@link BigDecimal#round(MathContext)} on the underlying value.</p>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding mode
+	 * @return a {@code Decimal} representing this value rounded according to {@code context}
+	 */
+	public Decimal round(MathContext context) {
+	    return new Decimal(value.round(context));
 	}
 
 	// =======================
