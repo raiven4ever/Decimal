@@ -18,9 +18,28 @@ import decimal.operations.ArithmeticBasics;
  */
 public class Decimal implements Comparable<Decimal>, Serializable{
 	
+	/**
+	 * Constant representing the decimal value {@code 0}.
+	 */
 	public static final Decimal ZERO = new Decimal(0);
+
+	/**
+	 * Constant representing the decimal value {@code 0.5}.
+	 *
+	 * <p>Useful for midpoint calculations and averaging
+	 * (e.g., {@link #average(Decimal, MathContext)}).</p>
+	 */
+	public static final Decimal HALF = new Decimal(0.5);
+
+	/**
+	 * Constant representing the decimal value {@code 1}.
+	 */
 	public static final Decimal ONE = new Decimal(1);
-	private static final Decimal TWO = new Decimal(2);
+
+	/**
+	 * Constant representing the decimal value {@code 2}.
+	 */
+	public static final Decimal TWO = new Decimal(2);
 	
 	/**
 	 * Default {@link MathContext} to be used when no explicit
@@ -37,7 +56,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
      * object maintain binary compatibility.
      */
 	private static final long serialVersionUID = 1L;
-	
 	/**
      * The underlying {@link BigDecimal} value that this {@code Decimal}
      * instance wraps.
@@ -681,14 +699,15 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Returns the average (arithmetic mean) of this {@code Decimal}
 	 * and another, using the specified math context.
 	 *
-	 * <p>Equivalent to calling {@code lerp(other, 0.5, context)}.</p>
+	 * <p>This is equivalent to calling {@code lerp(other, HALF, context)},
+	 * where {@code HALF} represents the constant value 0.5.</p>
 	 *
 	 * @param other   the value to average with
 	 * @param context the math context specifying precision and rounding
 	 * @return the arithmetic mean of the two values
 	 */
 	public Decimal average(Decimal other, MathContext context) {
-	    return lerp(other, 0.5, context);
+	    return lerp(other, HALF, context);
 	}
 
 	/**
