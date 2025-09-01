@@ -94,68 +94,137 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    this.value = new BigDecimal(value);
 	}
 	
-	//Class conversions
-	
-	//this just gives the value
+	// =======================
+	// Class conversions
+	// =======================
+
+	/**
+	 * Returns the underlying {@link BigDecimal} value wrapped by this
+	 * {@code Decimal}.
+	 *
+	 * <p><strong>Developer note:</strong> This is a direct accessor for
+	 * interoperability with APIs that require {@code BigDecimal}.
+	 *
+	 * @return the underlying {@code BigDecimal}
+	 */
 	public BigDecimal toBigDecimal() {
-		return value;
+	    return value;
 	}
-	
-	//uses BigDecimal toBigInteger()
+
+	/**
+	 * Converts this {@code Decimal} to a {@link BigInteger}, using
+	 * {@link BigDecimal#toBigInteger()} semantics.
+	 *
+	 * <p><strong>Developer note:</strong> This relies directly on
+	 * {@code BigDecimal.toBigInteger()}.
+	 *
+	 * @return a {@code BigInteger} representation of this {@code Decimal}
+	 */
 	public BigInteger toBigInteger() {
-		return value.toBigInteger();
+	    return value.toBigInteger();
 	}
-	
-	/*if this BigDecimal has too great a magnitude represent as a double, it will be converted to Double.NEGATIVE_INFINITY or Double.POSITIVE_INFINITY as appropriate.
-	 * (verbatim from BigDecimal doubleValue() documentation)
-	 * */
+
+	/**
+	 * Converts this {@code Decimal} to a {@code double}.
+	 *
+	 * <p>If this {@code Decimal} has too great a magnitude to be represented
+	 * as a {@code double}, the result will be
+	 * {@link Double#NEGATIVE_INFINITY} or {@link Double#POSITIVE_INFINITY}
+	 * as appropriate.
+	 *
+	 * <p><strong>Developer note:</strong> This behavior is verbatim from
+	 * {@link BigDecimal#doubleValue()} documentation.
+	 *
+	 * @return a {@code double} approximation of this {@code Decimal}
+	 */
 	public double toDouble() {
-		return value.doubleValue();
+	    return value.doubleValue();
 	}
-	
+
+	/**
+	 * Returns the string representation of this {@code Decimal} using
+	 * the {@link DecimalStringFormat#DEFAULT DEFAULT} format.
+	 *
+	 * @return a string representation of this {@code Decimal}
+	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return value.stripTrailingZeros().toString();
+	    return format(DecimalStringFormat.DEFAULT);
 	}
-	
-	//helper enum class just for format method
-	public static enum DecimalStringFormat{
-		DEFAULT,
-		PLAIN,
-		ENGINEERING,
-		SCIENTIFIC,
-		PRESERVE_SCALE,
-		STRIPPED,
+
+	/**
+	 * Enumeration of available string formatting styles for
+	 * {@code Decimal} values.
+	 *
+	 * <ul>
+	 *   <li>{@link #DEFAULT} – strips trailing zeros, plain string</li>
+	 *   <li>{@link #PLAIN} – plain string, no exponent</li>
+	 *   <li>{@link #ENGINEERING} – engineering notation (exponent multiple of 3)</li>
+	 *   <li>{@link #SCIENTIFIC} – scientific notation</li>
+	 *   <li>{@link #PRESERVE_SCALE} – preserves original scale, uses {@code BigDecimal.toString()}</li>
+	 *   <li>{@link #STRIPPED} – strips trailing zeros, plain string (alias of DEFAULT)</li>
+	 * </ul>
+	 */
+	public static enum DecimalStringFormat {
+	    DEFAULT,
+	    PLAIN,
+	    ENGINEERING,
+	    SCIENTIFIC,
+	    PRESERVE_SCALE,
+	    STRIPPED,
 	}
-	
-	//gives string representation of this decimal in a given format
+
+	/**
+	 * Returns a string representation of this {@code Decimal} in the
+	 * specified {@link DecimalStringFormat}.
+	 *
+	 * @param format the desired string formatting style
+	 * @return a string representation of this {@code Decimal} in the given format
+	 */
 	public String format(DecimalStringFormat format) {
-		return switch (format) {
-			case DEFAULT, STRIPPED -> value.stripTrailingZeros().toPlainString();
-			case PLAIN -> value.toPlainString();
-			case ENGINEERING -> value.toEngineeringString();
-			case SCIENTIFIC -> toScientificString();
-			case PRESERVE_SCALE -> value.toString();
-		};
+	    return switch (format) {
+	        case DEFAULT, STRIPPED -> value.stripTrailingZeros().toPlainString();
+	        case PLAIN -> value.toPlainString();
+	        case ENGINEERING -> value.toEngineeringString();
+	        case SCIENTIFIC -> toScientificString();
+	        case PRESERVE_SCALE -> value.toString();
+	    };
 	}
-	
-	//honestly thinking that this method should be public, even though it is a helper method of the format method
+
+	/**
+	 * Returns a string representation of this {@code Decimal} in
+	 * scientific notation.
+	 *
+	 * <p><strong>Developer note:</strong> This method is currently private
+	 * as it is a helper for {@link #format(DecimalStringFormat)}, but it
+	 * may be promoted to {@code public} in the future if direct access
+	 * is desirable.
+	 *
+	 * <p><strong>Implementation note:</strong> Builds the coefficient and
+	 * exponent manually:
+	 * <ul>
+	 *   <li>Coefficient: {@code unscaledValue} with a decimal point
+	 *       inserted after the first digit</li>
+	 *   <li>Exponent: {@code (unscaledValue length - 1 - scale)}</li>
+	 * </ul>
+	 *
+	 * @return a scientific-notation string representation of this {@code Decimal}
+	 */
 	private String toScientificString() {
-		//rough implementation
-		
-		//making the coefficient
-		BigDecimal stripTrailingZeros = value.stripTrailingZeros();
-		BigInteger unscaledValue = stripTrailingZeros.unscaledValue();
-		StringBuilder builder = new StringBuilder(unscaledValue.toString());
-		builder.insert(1, '.').toString();
-		
-		//making the exponent
-		int exponent = unscaledValue.toString().length() - 1 - stripTrailingZeros.scale();
-		builder.append('E');
-		builder.append(exponent < 0 ? exponent : "+" + String.valueOf(exponent)); 
-		
-		return builder.toString();
+	    // rough implementation
+
+	    // making the coefficient
+	    BigDecimal stripTrailingZeros = value.stripTrailingZeros();
+	    BigInteger unscaledValue = stripTrailingZeros.unscaledValue();
+	    StringBuilder builder = new StringBuilder(unscaledValue.toString());
+	    builder.insert(1, '.').toString();
+
+	    // making the exponent
+	    int exponent = unscaledValue.toString().length() - 1 - stripTrailingZeros.scale();
+	    builder.append('E');
+	    builder.append(exponent < 0 ? exponent : "+" + String.valueOf(exponent));
+
+	    return builder.toString();
 	}
 
 	// =======================
@@ -261,17 +330,121 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return divide(divisor, DEFAULT_CONTEXT);
 	}
 
+	// =======================
+	// Comparison operations
+	// =======================
+
+	/**
+	 * Compares this {@code Decimal} with the specified {@code Decimal}
+	 * for order.
+	 *
+	 * <p>The result is identical to calling
+	 * {@link BigDecimal#compareTo(BigDecimal)} on the underlying values.
+	 *
+	 * <p><strong>Developer note:</strong> This method is "just here honestly"
+	 * for convenience and delegates directly to {@code BigDecimal.compareTo()}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return a negative integer, zero, or a positive integer as this
+	 *         {@code Decimal} is less than, equal to, or greater than {@code other}
+	 */
 	@Override
 	public int compareTo(Decimal other) {
-		// TODO Auto-generated method stub
-		return value.compareTo(other.value);
+	    return value.compareTo(other.value);
 	}
-	
-	//Object niceties
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is numerically equal
+	 * to the specified {@code Decimal}.
+	 *
+	 * <p>This method uses {@link #compareTo(Decimal)} under the hood,
+	 * meaning scale differences are ignored (e.g., 1.0 and 1.00 compare as equal).
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if the two values are equal in numeric value
+	 */
+	public boolean equals(Decimal other) {
+	    return compareTo(other) == 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is numerically
+	 * not equal to the specified {@code Decimal}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if the two values differ in numeric value
+	 */
+	public boolean notEqual(Decimal other) {
+	    return compareTo(other) != 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is strictly less than
+	 * the specified {@code Decimal}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if this value is less than {@code other}
+	 */
+	public boolean lessThan(Decimal other) {
+	    return compareTo(other) < 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is strictly greater than
+	 * the specified {@code Decimal}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if this value is greater than {@code other}
+	 */
+	public boolean greaterThan(Decimal other) {
+	    return compareTo(other) > 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is less than or equal to
+	 * the specified {@code Decimal}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if this value is ≤ {@code other}
+	 */
+	public boolean lessThanOrEqualTo(Decimal other) {
+	    return compareTo(other) <= 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is greater than or equal to
+	 * the specified {@code Decimal}.
+	 *
+	 * @param other the {@code Decimal} to compare against
+	 * @return {@code true} if this value is ≥ {@code other}
+	 */
+	public boolean greaterThanOrEqualTo(Decimal other) {
+	    return compareTo(other) >= 0;
+	}
+
+	// =======================
+	// Object nicety
+	// =======================
+
+	/**
+	 * Compares this {@code Decimal} with the specified object for equality.
+	 *
+	 * <p>This implementation delegates directly to
+	 * {@link BigDecimal#equals(Object)}, which is sensitive to scale
+	 * (e.g., {@code new BigDecimal("1.0").equals(new BigDecimal("1.00"))}
+	 * is {@code false}).
+	 *
+	 * <p><strong>Developer note:</strong> This may become redundant if
+	 * {@code Decimal} is changed to normalize (e.g., strip trailing zeros)
+	 * on construction, since {@link #equals(Decimal)} already handles
+	 * numeric equality.
+	 *
+	 * @param other the object to compare with
+	 * @return {@code true} if the object is equal to this {@code Decimal}
+	 */
 	@Override
 	public boolean equals(Object other) {
-		// TODO Auto-generated method stub
-		return value.equals(other);
+	    return value.equals(other);
 	}
 
 }
