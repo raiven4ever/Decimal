@@ -23,20 +23,20 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	private static final Decimal TWO = new Decimal(2);
 	
 	/**
+	 * Default {@link MathContext} to be used when no explicit
+	 * context is provided by the caller.
+	 * <p>
+	 * The default is {@link MathContext#DECIMAL128}, providing
+	 * 34 digits of precision with the IEEE 754R Decimal128 format.
+	 */
+	private static final MathContext DEFAULT_CONTEXT = MathContext.DECIMAL128;
+	
+	/**
      * Serial version identifier used during deserialization
      * to verify that the sender and receiver of a serialized
      * object maintain binary compatibility.
      */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-     * Default {@link MathContext} to be used when no explicit
-     * context is provided by the caller.
-     * <p>
-     * The default is {@link MathContext#DECIMAL128}, providing
-     * 34 digits of precision with the IEEE 754R Decimal128 format.
-     */
-	private static final MathContext DEFAULT_CONTEXT = MathContext.DECIMAL128;
 	
 	/**
      * The underlying {@link BigDecimal} value that this {@code Decimal}
@@ -331,6 +331,47 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * rounded according to the supplied {@link MathContext}.
+	 *
+	 * <p>The result is equivalent to calling
+	 * {@link BigDecimal#round(MathContext)} on the underlying value.</p>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding mode
+	 * @return a {@code Decimal} representing this value rounded according to {@code context}
+	 */
+	public Decimal round(MathContext context) {
+	    return new Decimal(value.round(context));
+	}
+
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * with its scale set to the specified value, using the given rounding mode
+	 * if necessary.
+	 *
+	 * <p>This is equivalent to calling
+	 * {@link BigDecimal#setScale(int, RoundingMode)} on the underlying
+	 * {@link BigDecimal}.</p>
+	 *
+	 * <p><strong>Developer note:</strong> The {@link ArithmeticException}
+	 * is rethrown so that the stack trace originates from {@code Decimal}
+	 * instead of {@code BigDecimal}, keeping the wrapper API self-contained.</p>
+	 *
+	 * @param newScale the scale of the result (number of digits to the right of the decimal point)
+	 * @param mode the rounding mode to apply if rounding is necessary
+	 * @return a {@code Decimal} whose scale is set to {@code newScale}
+	 * @throws ArithmeticException if rounding is required but the rounding
+	 *         mode is {@link RoundingMode#UNNECESSARY}
+	 */
+	public Decimal setScale(int newScale, RoundingMode mode) {
+	    try {
+	        return new Decimal(value.setScale(newScale, mode));
+	    } catch (ArithmeticException e) {
+	        throw new ArithmeticException(e.toString());
+	    }
+	}
+
+	/**
 	 * Returns a new {@code Decimal} whose value is
 	 * {@code (this + addend)}, using the default {@link MathContext}.
 	 *
@@ -373,6 +414,31 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public Decimal divide(Decimal divisor) {
 	    return divide(divisor, DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Returns a new {@code Decimal} whose value is the negation of this
+	 * {@code Decimal}.
+	 *
+	 * <p>This is equivalent to multiplying the value by {@code -1}.</p>
+	 *
+	 * @return a {@code Decimal} representing {@code -this}
+	 */
+	public Decimal negate() {
+	    return new Decimal(value.negate());
+	}
+
+	/**
+	 * Returns this {@code Decimal} unchanged.
+	 *
+	 * <p><strong>Developer note:</strong> This method exists mainly for
+	 * symmetry with {@link #negate()}, so that unary plus and unary minus
+	 * can both be expressed explicitly.</p>
+	 *
+	 * @return this {@code Decimal} instance
+	 */
+	public Decimal plus() { // it’s just here so that negate is not alone
+	    return this;
 	}
 
 	/**
@@ -464,69 +530,63 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
-	 * Returns a new {@code Decimal} whose value is the negation of this
-	 * {@code Decimal}.
+	 * Compares this {@code Decimal} with the specified object for equality.
 	 *
-	 * <p>This is equivalent to multiplying the value by {@code -1}.</p>
+	 * <p>This implementation delegates directly to
+	 * {@link BigDecimal#equals(Object)}, which is sensitive to scale
+	 * (e.g., {@code new BigDecimal("1.0").equals(new BigDecimal("1.00"))}
+	 * is {@code false}).
 	 *
-	 * @return a {@code Decimal} representing {@code -this}
+	 * <p><strong>Developer note:</strong> This may become redundant if
+	 * {@code Decimal} is changed to normalize (e.g., strip trailing zeros)
+	 * on construction, since {@link #equals(Decimal)} already handles
+	 * numeric equality.
+	 *
+	 * @param other the object to compare with
+	 * @return {@code true} if the object is equal to this {@code Decimal}
 	 */
-	public Decimal negate() {
-	    return new Decimal(value.negate());
+	@Override
+	public boolean equals(Object other) {
+	    return value.equals(other);
 	}
 
 	/**
-	 * Returns this {@code Decimal} unchanged.
+	 * Returns {@code true} if this {@code Decimal} has no fractional part.
 	 *
-	 * <p><strong>Developer note:</strong> This method exists mainly for
-	 * symmetry with {@link #negate()}, so that unary plus and unary minus
-	 * can both be expressed explicitly.</p>
-	 *
-	 * @return this {@code Decimal} instance
+	 * @return {@code true} if this value is an integer, {@code false} otherwise
 	 */
-	public Decimal plus() { // it’s just here so that negate is not alone
-	    return this;
+	public boolean isInteger() {
+	    return this.equals(floor());
 	}
 
 	/**
-	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
-	 * rounded according to the supplied {@link MathContext}.
+	 * Returns {@code true} if this {@code Decimal} is zero or positive.
 	 *
-	 * <p>The result is equivalent to calling
-	 * {@link BigDecimal#round(MathContext)} on the underlying value.</p>
-	 *
-	 * @param context the {@link MathContext} specifying precision and rounding mode
-	 * @return a {@code Decimal} representing this value rounded according to {@code context}
+	 * @return {@code true} if this value ≥ 0
 	 */
-	public Decimal round(MathContext context) {
-	    return new Decimal(value.round(context));
+	public boolean isPositive() {
+	    return signum() >= 0;
 	}
-	
+
 	/**
-	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
-	 * with its scale set to the specified value, using the given rounding mode
-	 * if necessary.
+	 * Returns {@code true} if this {@code Decimal} is strictly negative.
 	 *
-	 * <p>This is equivalent to calling
-	 * {@link BigDecimal#setScale(int, RoundingMode)} on the underlying
-	 * {@link BigDecimal}.</p>
-	 *
-	 * <p><strong>Developer note:</strong> The {@link ArithmeticException}
-	 * is rethrown so that the stack trace originates from {@code Decimal}
-	 * instead of {@code BigDecimal}, keeping the wrapper API self-contained.</p>
-	 *
-	 * @param newScale the scale of the result (number of digits to the right of the decimal point)
-	 * @param mode the rounding mode to apply if rounding is necessary
-	 * @return a {@code Decimal} whose scale is set to {@code newScale}
-	 * @throws ArithmeticException if rounding is required but the rounding
-	 *         mode is {@link RoundingMode#UNNECESSARY}
+	 * @return {@code true} if this value < 0
 	 */
-	public Decimal setScale(int newScale, RoundingMode mode) {
-	    try {
-	        return new Decimal(value.setScale(newScale, mode));
-	    } catch (ArithmeticException e) {
-	        throw new ArithmeticException(e.toString());
-	    }
+	public boolean isNegative() {
+	    return signum() < 0;
+	}
+
+	/**
+	 * Returns the sign of this {@code Decimal}.
+	 *
+	 * <p>The result is {@code -1} if negative, {@code 0} if zero,
+	 * and {@code 1} if positive.</p>
+	 *
+	 * @return the signum of this value
+	 */
+	public int signum() {
+	    return value.signum();
 	}
 
 	/**
@@ -554,96 +614,51 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal floor() {
 	    return setScale(0, RoundingMode.FLOOR);
 	}
-	
-	/**
-	 * Returns {@code true} if this {@code Decimal} has no fractional part.
-	 *
-	 * @return {@code true} if this value is an integer, {@code false} otherwise
-	 */
-	public boolean isInteger() {
-	    return this.equals(floor());
-	}
 
 	/**
-	 * Compares this {@code Decimal} with the specified object for equality.
+	 * Linearly interpolates between this {@code Decimal} and another.
 	 *
-	 * <p>This implementation delegates directly to
-	 * {@link BigDecimal#equals(Object)}, which is sensitive to scale
-	 * (e.g., {@code new BigDecimal("1.0").equals(new BigDecimal("1.00"))}
-	 * is {@code false}).
+	 * <p>{@code alpha} must be in the range [0, 1]. When {@code alpha = 0},
+	 * the result is this value; when {@code alpha = 1}, the result is {@code other}.
+	 * Intermediate values produce a weighted average.</p>
 	 *
-	 * <p><strong>Developer note:</strong> This may become redundant if
-	 * {@code Decimal} is changed to normalize (e.g., strip trailing zeros)
-	 * on construction, since {@link #equals(Decimal)} already handles
-	 * numeric equality.
+	 * <p><strong>Developer note:</strong> All {@code lerp} overloads
+	 * delegate to this method.</p>
 	 *
-	 * @param other the object to compare with
-	 * @return {@code true} if the object is equal to this {@code Decimal}
-	 */
-	@Override
-	public boolean equals(Object other) {
-	    return value.equals(other);
-	}
-	
-	/**
-	 * Returns {@code true} if this {@code Decimal} is zero or positive.
-	 *
-	 * @return {@code true} if the value is ≥ 0
-	 */
-	public boolean isPositive() {
-	    return signum() >= 0;
-	}
-
-	/**
-	 * Returns {@code true} if this {@code Decimal} is strictly negative.
-	 *
-	 * @return {@code true} if the value is < 0
-	 */
-	public boolean isNegative() {
-	    return signum() < 0;
-	}
-
-	/**
-	 * Returns the sign of this {@code Decimal} as an integer.
-	 *
-	 * <ul>
-	 *   <li>{@code -1} if the value is negative</li>
-	 *   <li>{@code 0} if the value is zero</li>
-	 *   <li>{@code 1} if the value is positive</li>
-	 * </ul>
-	 *
-	 * @return the sign of this {@code Decimal}
-	 */
-	public int signum() {
-	    return value.signum();
-	}
-
-	/**
-	 * Performs linear interpolation between this {@code Decimal} and another.
-	 *
-	 * <p>The formula is:
-	 * <pre>
-	 * (1 - alpha) * this + alpha * other
-	 * </pre>
-	 *
-	 * @param other   the target value
-	 * @param alpha   interpolation parameter between 0 and 1
-	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @param other  the target value
+	 * @param alpha  the interpolation parameter, between 0 and 1 inclusive
+	 * @param context the math context specifying precision and rounding
 	 * @return the interpolated value
+	 * @throws IllegalArgumentException if {@code alpha} is outside [0, 1]
 	 */
 	public Decimal lerp(Decimal other, Decimal alpha, MathContext context) {
-	    return (ONE.subtract(alpha, context))
+	    if (alpha.greaterThanOrEqualTo(ZERO) && alpha.lessThanOrEqualTo(ONE))
+	        return (ONE.subtract(alpha, context))
 	            .multiply(this, context)
 	            .add(alpha.multiply(other, context), context);
+	    else
+	        throw new IllegalArgumentException("Alpha value must be between 0 inclusive and 1 inclusive");
 	}
 
 	/**
-	 * Performs linear interpolation between this {@code Decimal} and another,
-	 * using a {@code double} alpha value.
+	 * Linearly interpolates between this {@code Decimal} and another
+	 * using the default math context.
 	 *
-	 * @param other   the target value
-	 * @param alpha   interpolation parameter between 0 and 1
-	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @param other the target value
+	 * @param alpha the interpolation parameter, between 0 and 1 inclusive
+	 * @return the interpolated value
+	 */
+	public Decimal lerp(Decimal other, Decimal alpha) {
+	    return lerp(other, alpha, DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Linearly interpolates between this {@code Decimal} and another
+	 * using a primitive {@code double} alpha value.
+	 *
+	 * @param other  the target value
+	 * @param alpha  the interpolation parameter, between 0 and 1 inclusive
+	 * @param context the math context specifying precision and rounding
 	 * @return the interpolated value
 	 */
 	public Decimal lerp(Decimal other, double alpha, MathContext context) {
@@ -651,31 +666,54 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
-	 * Returns the average of this {@code Decimal} and another.
+	 * Linearly interpolates between this {@code Decimal} and another
+	 * using a primitive {@code double} alpha value and the default math context.
+	 *
+	 * @param other the target value
+	 * @param alpha the interpolation parameter, between 0 and 1 inclusive
+	 * @return the interpolated value
+	 */
+	public Decimal lerp(Decimal other, double alpha) {
+	    return lerp(other, alpha, DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Returns the average (arithmetic mean) of this {@code Decimal}
+	 * and another, using the specified math context.
 	 *
 	 * <p>Equivalent to calling {@code lerp(other, 0.5, context)}.</p>
 	 *
-	 * @param other   the other value
-	 * @param context the {@link MathContext} specifying precision and rounding
-	 * @return the arithmetic mean of this and {@code other}
+	 * @param other   the value to average with
+	 * @param context the math context specifying precision and rounding
+	 * @return the arithmetic mean of the two values
 	 */
 	public Decimal average(Decimal other, MathContext context) {
 	    return lerp(other, 0.5, context);
 	}
 
 	/**
-	 * Returns the factorial of this {@code Decimal} value,
-	 * computed recursively with a divide-and-conquer strategy.
+	 * Returns the average (arithmetic mean) of this {@code Decimal}
+	 * and another, using the default math context.
 	 *
-	 * <p><strong>Constraints:</strong>
-	 * <ul>
-	 *   <li>The value must be an integer.</li>
-	 *   <li>The value must be non-negative.</li>
-	 * </ul>
+	 * @param other the value to average with
+	 * @return the arithmetic mean of the two values
+	 */
+	public Decimal average(Decimal other) {
+	    return average(other, DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Returns the factorial of this {@code Decimal}, using the supplied math context.
 	 *
-	 * @param context the {@link MathContext} specifying precision and rounding
-	 * @return {@code n!} where {@code n} is this value
-	 * @throws ArithmeticException if the value is negative or non-integer
+	 * <p>The value must be a non-negative integer. If the value is not an integer
+	 * or is negative, an {@link ArithmeticException} is thrown.</p>
+	 *
+	 * <p><strong>Developer note:</strong> Implements a recursive
+	 * divide-and-conquer multiplication strategy via {@code factorialHelper}.</p>
+	 *
+	 * @param context the math context specifying precision and rounding
+	 * @return the factorial of this value
+	 * @throws ArithmeticException if the value is not a non-negative integer
 	 */
 	public Decimal factorial(MathContext context) {
 	    if (!isInteger() || isNegative())
@@ -685,34 +723,30 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
-	 * Returns the factorial of this {@code Decimal} using the
-	 * default {@link MathContext}.
+	 * Returns the factorial of this {@code Decimal}, using the default math context.
 	 *
-	 * @return {@code n!} where {@code n} is this value
-	 * @throws ArithmeticException if the value is negative or non-integer
+	 * @return the factorial of this value
+	 * @throws ArithmeticException if the value is not a non-negative integer
 	 */
 	public Decimal factorial() {
 	    return factorial(DEFAULT_CONTEXT);
 	}
 
 	/**
-	 * Recursive helper for factorial calculation using a
-	 * divide-and-conquer approach.
+	 * Helper method for computing factorial recursively using
+	 * a divide-and-conquer approach.
 	 *
-	 * <p>Splits the range {@code [lo, hi]} into halves, computes
-	 * partial products recursively, and combines them.</p>
-	 *
-	 * @param lo      the lower bound of the range
-	 * @param hi      the upper bound of the range
-	 * @param context the {@link MathContext} specifying precision and rounding
-	 * @return the product of all integers in the range {@code [lo, hi]}
+	 * @param low      the lower bound of the multiplication range
+	 * @param high      the upper bound of the multiplication range
+	 * @param context the math context specifying precision and rounding
+	 * @return the product of all integers in the range [low, high]
 	 */
-	private static Decimal factorialHelper(Decimal lo, Decimal hi, MathContext context) {
-	    if (lo.greaterThan(hi)) return ONE;
-	    if (lo.equals(hi)) return lo;
-	    Decimal mid = lo.average(hi, context).floor();
-	    Decimal left = factorialHelper(lo, mid, context);
-	    Decimal right = factorialHelper(mid.add(ONE, context), hi, context);
+	private static Decimal factorialHelper(Decimal low, Decimal high, MathContext context) {
+	    if (low.greaterThan(high)) return ONE;
+	    if (low.equals(high)) return low;
+	    Decimal mid = low.average(high, context).floor();
+	    Decimal left = factorialHelper(low, mid, context);
+	    Decimal right = factorialHelper(mid.add(ONE, context), high, context);
 	    return left.multiply(right);
 	}
 
