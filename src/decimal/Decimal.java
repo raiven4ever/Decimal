@@ -504,6 +504,16 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal floor() {
 	    return setScale(0, RoundingMode.FLOOR);
 	}
+	
+	/**
+	 * Returns {@code true} if this {@code Decimal} has no fractional part.
+	 *
+	 * @return {@code true} if this value is an integer, {@code false} otherwise
+	 */
+	public boolean isInteger() {
+	    return this.equals(floor());
+	}
+
 
 	/**
 	 * Compares this {@code Decimal} with the specified object for equality.
