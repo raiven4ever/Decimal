@@ -18,6 +18,10 @@ import decimal.operations.ArithmeticBasics;
  */
 public class Decimal implements Comparable<Decimal>, Serializable{
 	
+	public static final Decimal ZERO = new Decimal(0);
+	public static final Decimal ONE = new Decimal(1);
+	private static final Decimal TWO = new Decimal(2);
+	
 	/**
      * Serial version identifier used during deserialization
      * to verify that the sender and receiver of a serialized
@@ -101,6 +105,14 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal(double value) {
 	    this.value = new BigDecimal(value);
 	}
+	
+	public Decimal(int value) {
+		this.value = new BigDecimal(value);
+	}
+	
+	public Decimal(long value) {
+		this.value = new BigDecimal(value);
+	}
 
 	/**
 	 * Returns the underlying {@link BigDecimal} value wrapped by this
@@ -143,6 +155,44 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public double toDouble() {
 	    return value.doubleValue();
+	}
+
+	/**
+	 * Converts this {@code Decimal} to an {@code int}, throwing an exception
+	 * if the value has a fractional part or is out of the {@code int} range.
+	 *
+	 * <p><strong>Developer note:</strong> Uses {@link BigDecimal#intValueExact()}.
+	 * The {@link ArithmeticException} is rethrown so the stack trace originates
+	 * from {@code Decimal} instead of {@code BigDecimal}.</p>
+	 *
+	 * @return this value as an {@code int}
+	 * @throws ArithmeticException if the value cannot be represented as an exact {@code int}
+	 */
+	public int toInt() {
+	    try {
+	        return value.intValueExact();
+	    } catch (ArithmeticException e) {
+	        throw new ArithmeticException(e.toString());
+	    }
+	}
+
+	/**
+	 * Converts this {@code Decimal} to a {@code long}, throwing an exception
+	 * if the value has a fractional part or is out of the {@code long} range.
+	 *
+	 * <p><strong>Developer note:</strong> Uses {@link BigDecimal#longValueExact()}.
+	 * The {@link ArithmeticException} is rethrown so the stack trace originates
+	 * from {@code Decimal} instead of {@code BigDecimal}.</p>
+	 *
+	 * @return this value as a {@code long}
+	 * @throws ArithmeticException if the value cannot be represented as an exact {@code long}
+	 */
+	public long toLong() {
+	    try {
+	        return value.longValueExact();
+	    } catch (ArithmeticException e) {
+	        throw new ArithmeticException(e.toString());
+	    }
 	}
 
 	/**
@@ -514,7 +564,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return this.equals(floor());
 	}
 
-
 	/**
 	 * Compares this {@code Decimal} with the specified object for equality.
 	 *
@@ -534,6 +583,137 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	@Override
 	public boolean equals(Object other) {
 	    return value.equals(other);
+	}
+	
+	/**
+	 * Returns {@code true} if this {@code Decimal} is zero or positive.
+	 *
+	 * @return {@code true} if the value is ≥ 0
+	 */
+	public boolean isPositive() {
+	    return signum() >= 0;
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is strictly negative.
+	 *
+	 * @return {@code true} if the value is < 0
+	 */
+	public boolean isNegative() {
+	    return signum() < 0;
+	}
+
+	/**
+	 * Returns the sign of this {@code Decimal} as an integer.
+	 *
+	 * <ul>
+	 *   <li>{@code -1} if the value is negative</li>
+	 *   <li>{@code 0} if the value is zero</li>
+	 *   <li>{@code 1} if the value is positive</li>
+	 * </ul>
+	 *
+	 * @return the sign of this {@code Decimal}
+	 */
+	public int signum() {
+	    return value.signum();
+	}
+
+	/**
+	 * Performs linear interpolation between this {@code Decimal} and another.
+	 *
+	 * <p>The formula is:
+	 * <pre>
+	 * (1 - alpha) * this + alpha * other
+	 * </pre>
+	 *
+	 * @param other   the target value
+	 * @param alpha   interpolation parameter between 0 and 1
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the interpolated value
+	 */
+	public Decimal lerp(Decimal other, Decimal alpha, MathContext context) {
+	    return (ONE.subtract(alpha, context))
+	            .multiply(this, context)
+	            .add(alpha.multiply(other, context), context);
+	}
+
+	/**
+	 * Performs linear interpolation between this {@code Decimal} and another,
+	 * using a {@code double} alpha value.
+	 *
+	 * @param other   the target value
+	 * @param alpha   interpolation parameter between 0 and 1
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the interpolated value
+	 */
+	public Decimal lerp(Decimal other, double alpha, MathContext context) {
+	    return lerp(other, new Decimal(alpha), context);
+	}
+
+	/**
+	 * Returns the average of this {@code Decimal} and another.
+	 *
+	 * <p>Equivalent to calling {@code lerp(other, 0.5, context)}.</p>
+	 *
+	 * @param other   the other value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the arithmetic mean of this and {@code other}
+	 */
+	public Decimal average(Decimal other, MathContext context) {
+	    return lerp(other, 0.5, context);
+	}
+
+	/**
+	 * Returns the factorial of this {@code Decimal} value,
+	 * computed recursively with a divide-and-conquer strategy.
+	 *
+	 * <p><strong>Constraints:</strong>
+	 * <ul>
+	 *   <li>The value must be an integer.</li>
+	 *   <li>The value must be non-negative.</li>
+	 * </ul>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return {@code n!} where {@code n} is this value
+	 * @throws ArithmeticException if the value is negative or non-integer
+	 */
+	public Decimal factorial(MathContext context) {
+	    if (!isInteger() || isNegative())
+	        throw new ArithmeticException("value must be a non-negative integer");
+	    if (lessThan(TWO)) return ONE;
+	    return factorialHelper(TWO, this, context);
+	}
+
+	/**
+	 * Returns the factorial of this {@code Decimal} using the
+	 * default {@link MathContext}.
+	 *
+	 * @return {@code n!} where {@code n} is this value
+	 * @throws ArithmeticException if the value is negative or non-integer
+	 */
+	public Decimal factorial() {
+	    return factorial(DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Recursive helper for factorial calculation using a
+	 * divide-and-conquer approach.
+	 *
+	 * <p>Splits the range {@code [lo, hi]} into halves, computes
+	 * partial products recursively, and combines them.</p>
+	 *
+	 * @param lo      the lower bound of the range
+	 * @param hi      the upper bound of the range
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the product of all integers in the range {@code [lo, hi]}
+	 */
+	private static Decimal factorialHelper(Decimal lo, Decimal hi, MathContext context) {
+	    if (lo.greaterThan(hi)) return ONE;
+	    if (lo.equals(hi)) return lo;
+	    Decimal mid = lo.average(hi, context).floor();
+	    Decimal left = factorialHelper(lo, mid, context);
+	    Decimal right = factorialHelper(mid.add(ONE, context), hi, context);
+	    return left.multiply(right);
 	}
 
 }
