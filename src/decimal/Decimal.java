@@ -78,9 +78,17 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal(BigDecimal value) {
 	    this.value = value;
 	}
-	
+
+	/**
+	 * Creates a new {@code Decimal} from the specified {@link BigInteger}.
+	 *
+	 * <p>The value is converted directly via
+	 * {@code new BigDecimal(BigInteger)}.</p>
+	 *
+	 * @param value the {@code BigInteger} to wrap (must not be {@code null})
+	 */
 	public Decimal(BigInteger value) {
-		this.value = new BigDecimal(value);
+	    this.value = new BigDecimal(value);
 	}
 
 	/**
@@ -127,14 +135,29 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal(double value) {
 	    this.value = new BigDecimal(value);
 	}
-	
+
+	/**
+	 * Creates a new {@code Decimal} from the specified {@code int} value.
+	 *
+	 * <p>Equivalent to calling {@code new BigDecimal(int)}.</p>
+	 *
+	 * @param value the {@code int} value to wrap
+	 */
 	public Decimal(int value) {
-		this.value = new BigDecimal(value);
+	    this.value = new BigDecimal(value);
 	}
-	
+
+	/**
+	 * Creates a new {@code Decimal} from the specified {@code long} value.
+	 *
+	 * <p>Equivalent to calling {@code new BigDecimal(long)}.</p>
+	 *
+	 * @param value the {@code long} value to wrap
+	 */
 	public Decimal(long value) {
-		this.value = new BigDecimal(value);
+	    this.value = new BigDecimal(value);
 	}
+
 
 	/**
 	 * Returns the underlying {@link BigDecimal} value wrapped by this
