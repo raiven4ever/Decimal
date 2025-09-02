@@ -78,6 +78,10 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal(BigDecimal value) {
 	    this.value = value;
 	}
+	
+	public Decimal(BigInteger value) {
+		this.value = new BigDecimal(value);
+	}
 
 	/**
 	 * Creates a new {@code Decimal} from the specified string
@@ -716,7 +720,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return add(other, context).multiply(HALF, context);
 	}
 
-
 	/**
 	 * Returns the average (arithmetic mean) of this {@code Decimal}
 	 * and another, using the default math context.
@@ -734,13 +737,18 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * <p>The value must be a non-negative integer. If the value is not an integer
 	 * or is negative, an {@link ArithmeticException} is thrown.</p>
 	 *
-	 * <p><strong>Developer note:</strong> Implements a recursive
-	 * divide-and-conquer multiplication strategy via {@code factorialHelper}.</p>
+	 * <p><strong>Developer note:</strong> This implementation uses recursive
+	 * divide-and-conquer multiplication via {@code factorialHelper}. Since
+	 * {@link BigInteger} multiplications do not require a {@link MathContext},
+	 * this method is less efficient and has been deprecated.</p>
 	 *
 	 * @param context the math context specifying precision and rounding
 	 * @return the factorial of this value
 	 * @throws ArithmeticException if the value is not a non-negative integer
+	 * @deprecated use {@link #factorial()} instead, which uses a more efficient
+	 *             {@link BigInteger}-based implementation
 	 */
+	@Deprecated
 	public Decimal factorial(MathContext context) {
 	    if (!isInteger() || isNegative())
 	        throw new ArithmeticException("value must be a non-negative integer");
@@ -749,30 +757,69 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
-	 * Returns the factorial of this {@code Decimal}, using the default math context.
+	 * Returns the factorial of this {@code Decimal}, using an internal
+	 * {@link BigInteger}-based implementation.
+	 *
+	 * <p>The value must be a non-negative integer. If the value is not an integer
+	 * or is negative, an {@link ArithmeticException} is thrown.</p>
+	 *
+	 * <p><strong>Developer note:</strong> This version avoids {@link MathContext}
+	 * overhead by delegating to a pure {@link BigInteger} divide-and-conquer
+	 * multiplication strategy, which is more efficient for large values.</p>
 	 *
 	 * @return the factorial of this value
 	 * @throws ArithmeticException if the value is not a non-negative integer
 	 */
 	public Decimal factorial() {
-	    return factorial(DEFAULT_CONTEXT);
+	    if (!isInteger() || isNegative())
+	        throw new ArithmeticException("value must be a non-negative integer");
+	    if (lessThan(TWO)) return ONE;
+	    return new Decimal(factorialHelper(BigInteger.TWO, this.toBigInteger()));
 	}
 
 	/**
 	 * Helper method for computing factorial recursively using
-	 * a divide-and-conquer approach.
+	 * a divide-and-conquer approach, with {@code Decimal} arithmetic.
 	 *
-	 * @param low      the lower bound of the multiplication range
-	 * @param high      the upper bound of the multiplication range
+	 * <p><strong>Developer note:</strong> This method introduces significant
+	 * overhead due to frequent conversions between {@code Decimal} and
+	 * {@code BigDecimal}. It has been deprecated in favor of the
+	 * {@link BigInteger}-based implementation.</p>
+	 *
+	 * @param low   the lower bound of the multiplication range
+	 * @param high  the upper bound of the multiplication range
 	 * @param context the math context specifying precision and rounding
 	 * @return the product of all integers in the range [low, high]
+	 * @deprecated use the {@link BigInteger}-based factorial helper instead
 	 */
+	@Deprecated
 	private static Decimal factorialHelper(Decimal low, Decimal high, MathContext context) {
 	    if (low.greaterThan(high)) return ONE;
 	    if (low.equals(high)) return low;
 	    Decimal mid = low.average(high, context).floor();
 	    Decimal left = factorialHelper(low, mid, context);
 	    Decimal right = factorialHelper(mid.add(ONE, context), high, context);
+	    return left.multiply(right);
+	}
+
+	/**
+	 * Helper method for computing factorial recursively using
+	 * a divide-and-conquer approach, with {@link BigInteger} arithmetic.
+	 *
+	 * <p><strong>Developer note:</strong> This implementation avoids
+	 * precision contexts entirely and is significantly faster and more
+	 * memory-efficient than the {@code Decimal}-based version.</p>
+	 *
+	 * @param low  the lower bound of the multiplication range
+	 * @param high the upper bound of the multiplication range
+	 * @return the product of all integers in the range [low, high]
+	 */
+	private BigInteger factorialHelper(BigInteger low, BigInteger high) {
+	    if (low.compareTo(high) > 0) return BigInteger.ONE;
+	    if (low.compareTo(high) == 0) return low;
+	    BigInteger mid = low.add(high).shiftRight(1);
+	    BigInteger left = factorialHelper(low, mid);
+	    BigInteger right = factorialHelper(mid.add(BigInteger.ONE), high);
 	    return left.multiply(right);
 	}
 
