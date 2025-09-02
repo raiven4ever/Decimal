@@ -699,16 +699,23 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Returns the average (arithmetic mean) of this {@code Decimal}
 	 * and another, using the specified math context.
 	 *
-	 * <p>This is equivalent to calling {@code lerp(other, HALF, context)},
-	 * where {@code HALF} represents the constant value 0.5.</p>
+	 * <p>The result is computed as
+	 * {@code (this + other) × 0.5}, using the provided
+	 * {@link MathContext} for precision and rounding.</p>
+	 *
+	 * <p><strong>Implementation note:</strong> Although equivalent to
+	 * calling {@code lerp(other, HALF, context)}, this method directly
+	 * computes the mean via addition and multiplication for clarity.</p>
 	 *
 	 * @param other   the value to average with
 	 * @param context the math context specifying precision and rounding
 	 * @return the arithmetic mean of the two values
 	 */
 	public Decimal average(Decimal other, MathContext context) {
-	    return lerp(other, HALF, context);
+//		return lerp(other, HALF, context);
+	    return add(other, context).multiply(HALF, context);
 	}
+
 
 	/**
 	 * Returns the average (arithmetic mean) of this {@code Decimal}

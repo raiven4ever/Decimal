@@ -17,6 +17,7 @@ public class Exponentiation {
 		if (exponent.isInteger()) {
 			integerExponentiation(e(context), exponent, context);
 		}
+		return exponent;
 	}
 	
 	private static void integerExponentiation(Decimal e, Decimal exponent, MathContext context) {
