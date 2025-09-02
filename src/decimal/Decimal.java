@@ -838,7 +838,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param high the upper bound of the multiplication range
 	 * @return the product of all integers in the range [low, high]
 	 */
-	private BigInteger factorialHelper(BigInteger low, BigInteger high) {
+	private static BigInteger factorialHelper(BigInteger low, BigInteger high) {
 		if (low.compareTo(high) > 0) 	return BigInteger.ONE;
 		if (low.compareTo(high) == 0) 	return low;
 		BigInteger mid 		= low.add(high).shiftRight(1);
