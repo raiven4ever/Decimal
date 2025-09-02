@@ -17,7 +17,7 @@ import decimal.operations.ArithmeticBasics;
  * immutable and thread-safe.
  */
 public class Decimal implements Comparable<Decimal>, Serializable{
-	
+
 	/**
 	 * Constant representing the decimal value {@code 0}.
 	 */
@@ -40,7 +40,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Constant representing the decimal value {@code 2}.
 	 */
 	public static final Decimal TWO = new Decimal(2);
-	
+
 	/**
 	 * Default {@link MathContext} to be used when no explicit
 	 * context is provided by the caller.
@@ -49,19 +49,19 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * 34 digits of precision with the IEEE 754R Decimal128 format.
 	 */
 	private static final MathContext DEFAULT_CONTEXT = MathContext.DECIMAL128;
-	
+
 	/**
-     * Serial version identifier used during deserialization
-     * to verify that the sender and receiver of a serialized
-     * object maintain binary compatibility.
-     */
+	 * Serial version identifier used during deserialization
+	 * to verify that the sender and receiver of a serialized
+	 * object maintain binary compatibility.
+	 */
 	private static final long serialVersionUID = 1L;
 	/**
-     * The underlying {@link BigDecimal} value that this {@code Decimal}
-     * instance wraps.
-     * <p>
-     * This field is immutable and never {@code null}.
-     */
+	 * The underlying {@link BigDecimal} value that this {@code Decimal}
+	 * instance wraps.
+	 * <p>
+	 * This field is immutable and never {@code null}.
+	 */
 	private final BigDecimal value;
 
 	/**
@@ -76,7 +76,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@link BigDecimal} to wrap (must not be {@code null})
 	 */
 	public Decimal(BigDecimal value) {
-	    this.value = value;
+		this.value = value;
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code BigInteger} to wrap (must not be {@code null})
 	 */
 	public Decimal(BigInteger value) {
-	    this.value = new BigDecimal(value);
+		this.value = new BigDecimal(value);
 	}
 
 	/**
@@ -110,12 +110,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 *         representation of a {@code BigDecimal}
 	 */
 	public Decimal(String value) {
-	    try {
-	        this.value = new BigDecimal(value);
-	    } catch (NumberFormatException e) {
-	        // Re-throw so the exception appears to come from Decimal
-	        throw new NumberFormatException(e.toString());
-	    }
+		try {
+			this.value = new BigDecimal(value);
+		} catch (NumberFormatException e) {
+			// Re-throw so the exception appears to come from Decimal
+			throw new NumberFormatException(e.toString());
+		}
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 *         positive infinity, or negative infinity
 	 */
 	public Decimal(double value) {
-	    this.value = new BigDecimal(value);
+		this.value = new BigDecimal(value);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code int} value to wrap
 	 */
 	public Decimal(int value) {
-	    this.value = new BigDecimal(value);
+		this.value = new BigDecimal(value);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code long} value to wrap
 	 */
 	public Decimal(long value) {
-	    this.value = new BigDecimal(value);
+		this.value = new BigDecimal(value);
 	}
 
 
@@ -169,7 +169,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the underlying {@code BigDecimal}
 	 */
 	public BigDecimal toBigDecimal() {
-	    return value;
+		return value;
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code BigInteger} representation of this {@code Decimal}
 	 */
 	public BigInteger toBigInteger() {
-	    return value.toBigInteger();
+		return value.toBigInteger();
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code double} approximation of this {@code Decimal}
 	 */
 	public double toDouble() {
-	    return value.doubleValue();
+		return value.doubleValue();
 	}
 
 	/**
@@ -214,11 +214,11 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws ArithmeticException if the value cannot be represented as an exact {@code int}
 	 */
 	public int toInt() {
-	    try {
-	        return value.intValueExact();
-	    } catch (ArithmeticException e) {
-	        throw new ArithmeticException(e.toString());
-	    }
+		try {
+			return value.intValueExact();
+		} catch (ArithmeticException e) {
+			throw new ArithmeticException(e.toString());
+		}
 	}
 
 	/**
@@ -233,11 +233,11 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws ArithmeticException if the value cannot be represented as an exact {@code long}
 	 */
 	public long toLong() {
-	    try {
-	        return value.longValueExact();
-	    } catch (ArithmeticException e) {
-	        throw new ArithmeticException(e.toString());
-	    }
+		try {
+			return value.longValueExact();
+		} catch (ArithmeticException e) {
+			throw new ArithmeticException(e.toString());
+		}
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Override
 	public String toString() {
-	    return format(DecimalStringFormat.DEFAULT);
+		return format(DecimalStringFormat.DEFAULT);
 	}
 
 	/**
@@ -265,12 +265,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * </ul>
 	 */
 	public static enum DecimalStringFormat {
-	    DEFAULT,
-	    PLAIN,
-	    ENGINEERING,
-	    SCIENTIFIC,
-	    PRESERVE_SCALE,
-	    STRIPPED,
+		DEFAULT,
+		PLAIN,
+		ENGINEERING,
+		SCIENTIFIC,
+		PRESERVE_SCALE,
+		STRIPPED,
 	}
 
 	/**
@@ -281,13 +281,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a string representation of this {@code Decimal} in the given format
 	 */
 	public String format(DecimalStringFormat format) {
-	    return switch (format) {
-	        case DEFAULT, STRIPPED -> value.stripTrailingZeros().toPlainString();
-	        case PLAIN -> value.toPlainString();
-	        case ENGINEERING -> value.toEngineeringString();
-	        case SCIENTIFIC -> toScientificString();
-	        case PRESERVE_SCALE -> value.toString();
-	    };
+		return switch (format) {
+		case DEFAULT, STRIPPED 	-> value.stripTrailingZeros().toPlainString();
+		case PLAIN 				-> value.toPlainString();
+		case ENGINEERING 		-> value.toEngineeringString();
+		case SCIENTIFIC 		-> toScientificString();
+		case PRESERVE_SCALE 	-> value.toString();
+		};
 	}
 
 	/**
@@ -310,20 +310,20 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a scientific-notation string representation of this {@code Decimal}
 	 */
 	private String toScientificString() {
-	    // rough implementation
+		// rough implementation
 
-	    // making the coefficient
-	    BigDecimal stripTrailingZeros = value.stripTrailingZeros();
-	    BigInteger unscaledValue = stripTrailingZeros.unscaledValue();
-	    StringBuilder builder = new StringBuilder(unscaledValue.toString());
-	    builder.insert(1, '.').toString();
+		// making the coefficient
+		BigDecimal stripTrailingZeros = value.stripTrailingZeros();
+		BigInteger unscaledValue = stripTrailingZeros.unscaledValue();
+		StringBuilder builder = new StringBuilder(unscaledValue.toString());
+		builder.insert(1, '.').toString();
 
-	    // making the exponent
-	    int exponent = unscaledValue.toString().length() - 1 - stripTrailingZeros.scale();
-	    builder.append('E');
-	    builder.append(exponent < 0 ? exponent : "+" + String.valueOf(exponent));
+		// making the exponent
+		int exponent = unscaledValue.toString().length() - 1 - stripTrailingZeros.scale();
+		builder.append('E');
+		builder.append(exponent < 0 ? exponent : "+" + String.valueOf(exponent));
 
-	    return builder.toString();
+		return builder.toString();
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this + addend}
 	 */
 	public Decimal add(Decimal addend, MathContext context) {
-	    return ArithmeticBasics.addition(this, addend, context);
+		return ArithmeticBasics.addition(this, addend, context);
 	}
 
 	/**
@@ -347,7 +347,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this - subtrahend}
 	 */
 	public Decimal subtract(Decimal subtrahend, MathContext context) {
-	    return ArithmeticBasics.subtraction(this, subtrahend, context);
+		return ArithmeticBasics.subtraction(this, subtrahend, context);
 	}
 
 	/**
@@ -359,7 +359,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this × multiplicand}
 	 */
 	public Decimal multiply(Decimal multiplicand, MathContext context) {
-	    return ArithmeticBasics.multiplication(this, multiplicand, context);
+		return ArithmeticBasics.multiplication(this, multiplicand, context);
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws ArithmeticException if {@code divisor} is zero
 	 */
 	public Decimal divide(Decimal divisor, MathContext context) {
-	    return ArithmeticBasics.division(this, divisor, context);
+		return ArithmeticBasics.division(this, divisor, context);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing this value rounded according to {@code context}
 	 */
 	public Decimal round(MathContext context) {
-	    return new Decimal(value.round(context));
+		return new Decimal(value.round(context));
 	}
 
 	/**
@@ -409,11 +409,11 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 *         mode is {@link RoundingMode#UNNECESSARY}
 	 */
 	public Decimal setScale(int newScale, RoundingMode mode) {
-	    try {
-	        return new Decimal(value.setScale(newScale, mode));
-	    } catch (ArithmeticException e) {
-	        throw new ArithmeticException(e.toString());
-	    }
+		try {
+			return new Decimal(value.setScale(newScale, mode));
+		} catch (ArithmeticException e) {
+			throw new ArithmeticException(e.toString());
+		}
 	}
 
 	/**
@@ -424,7 +424,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this + addend}
 	 */
 	public Decimal add(Decimal addend) {
-	    return add(addend, DEFAULT_CONTEXT);
+		return add(addend, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -435,7 +435,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this - subtrahend}
 	 */
 	public Decimal subtract(Decimal subtrahend) {
-	    return subtract(subtrahend, DEFAULT_CONTEXT);
+		return subtract(subtrahend, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -446,7 +446,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code this × multiplicand}
 	 */
 	public Decimal multiply(Decimal multiplicand) {
-	    return multiply(multiplicand, DEFAULT_CONTEXT);
+		return multiply(multiplicand, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -458,7 +458,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws ArithmeticException if {@code divisor} is zero
 	 */
 	public Decimal divide(Decimal divisor) {
-	    return divide(divisor, DEFAULT_CONTEXT);
+		return divide(divisor, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -470,7 +470,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing {@code -this}
 	 */
 	public Decimal negate() {
-	    return new Decimal(value.negate());
+		return new Decimal(value.negate());
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return this {@code Decimal} instance
 	 */
 	public Decimal plus() { // it’s just here so that negate is not alone
-	    return this;
+		return this;
 	}
 
 	/**
@@ -502,7 +502,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Override
 	public int compareTo(Decimal other) {
-	    return value.compareTo(other.value);
+		return value.compareTo(other.value);
 	}
 
 	/**
@@ -516,7 +516,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if the two values are equal in numeric value
 	 */
 	public boolean equals(Decimal other) {
-	    return compareTo(other) == 0;
+		return compareTo(other) == 0;
 	}
 
 	/**
@@ -527,7 +527,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if the two values differ in numeric value
 	 */
 	public boolean notEqual(Decimal other) {
-	    return compareTo(other) != 0;
+		return compareTo(other) != 0;
 	}
 
 	/**
@@ -538,7 +538,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is less than {@code other}
 	 */
 	public boolean lessThan(Decimal other) {
-	    return compareTo(other) < 0;
+		return compareTo(other) < 0;
 	}
 
 	/**
@@ -549,7 +549,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is greater than {@code other}
 	 */
 	public boolean greaterThan(Decimal other) {
-	    return compareTo(other) > 0;
+		return compareTo(other) > 0;
 	}
 
 	/**
@@ -560,7 +560,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is ≤ {@code other}
 	 */
 	public boolean lessThanOrEqualTo(Decimal other) {
-	    return compareTo(other) <= 0;
+		return compareTo(other) <= 0;
 	}
 
 	/**
@@ -571,7 +571,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is ≥ {@code other}
 	 */
 	public boolean greaterThanOrEqualTo(Decimal other) {
-	    return compareTo(other) >= 0;
+		return compareTo(other) >= 0;
 	}
 
 	/**
@@ -592,7 +592,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Override
 	public boolean equals(Object other) {
-	    return value.equals(other);
+		return value.equals(other);
 	}
 
 	/**
@@ -601,7 +601,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is an integer, {@code false} otherwise
 	 */
 	public boolean isInteger() {
-	    return this.equals(floor());
+		return this.equals(floor());
 	}
 
 	/**
@@ -610,7 +610,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value ≥ 0
 	 */
 	public boolean isPositive() {
-	    return signum() >= 0;
+		return signum() >= 0;
 	}
 
 	/**
@@ -619,7 +619,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value < 0
 	 */
 	public boolean isNegative() {
-	    return signum() < 0;
+		return signum() < 0;
 	}
 
 	/**
@@ -631,7 +631,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the signum of this value
 	 */
 	public int signum() {
-	    return value.signum();
+		return value.signum();
 	}
 
 	/**
@@ -644,7 +644,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} rounded upward to the nearest integer
 	 */
 	public Decimal ceiling() {
-	    return setScale(0, RoundingMode.CEILING);
+		return setScale(0, RoundingMode.CEILING);
 	}
 
 	/**
@@ -657,7 +657,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} rounded downward to the nearest integer
 	 */
 	public Decimal floor() {
-	    return setScale(0, RoundingMode.FLOOR);
+		return setScale(0, RoundingMode.FLOOR);
 	}
 
 	/**
@@ -677,12 +677,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws IllegalArgumentException if {@code alpha} is outside [0, 1]
 	 */
 	public Decimal lerp(Decimal other, Decimal alpha, MathContext context) {
-	    if (alpha.greaterThanOrEqualTo(ZERO) && alpha.lessThanOrEqualTo(ONE))
-	        return (ONE.subtract(alpha, context))
-	            .multiply(this, context)
-	            .add(alpha.multiply(other, context), context);
-	    else
-	        throw new IllegalArgumentException("Alpha value must be between 0 inclusive and 1 inclusive");
+		if (alpha.greaterThanOrEqualTo(ZERO) && alpha.lessThanOrEqualTo(ONE))
+			return (ONE.subtract(alpha, context))
+					.multiply(this, context)
+					.add(alpha.multiply(other, context), context);
+		else
+			throw new IllegalArgumentException("Alpha value must be between 0 inclusive and 1 inclusive");
 	}
 
 	/**
@@ -694,7 +694,8 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the interpolated value
 	 */
 	public Decimal lerp(Decimal other, Decimal alpha) {
-	    return lerp(other, alpha, DEFAULT_CONTEXT);
+		return lerp(other, alpha, DEFAULT_CONTEXT);
+
 	}
 
 	/**
@@ -707,7 +708,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the interpolated value
 	 */
 	public Decimal lerp(Decimal other, double alpha, MathContext context) {
-	    return lerp(other, new Decimal(alpha), context);
+		return lerp(other, new Decimal(alpha), context);
 	}
 
 	/**
@@ -719,7 +720,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the interpolated value
 	 */
 	public Decimal lerp(Decimal other, double alpha) {
-	    return lerp(other, alpha, DEFAULT_CONTEXT);
+		return lerp(other, alpha, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -739,8 +740,8 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the arithmetic mean of the two values
 	 */
 	public Decimal average(Decimal other, MathContext context) {
-//		return lerp(other, HALF, context);
-	    return add(other, context).multiply(HALF, context);
+		//		return lerp(other, HALF, context);
+		return add(other, context).multiply(HALF, context);
 	}
 
 	/**
@@ -751,7 +752,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the arithmetic mean of the two values
 	 */
 	public Decimal average(Decimal other) {
-	    return average(other, DEFAULT_CONTEXT);
+		return average(other, DEFAULT_CONTEXT);
 	}
 
 	/**
@@ -773,10 +774,10 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Deprecated
 	public Decimal factorial(MathContext context) {
-	    if (!isInteger() || isNegative())
-	        throw new ArithmeticException("value must be a non-negative integer");
-	    if (lessThan(TWO)) return ONE;
-	    return factorialHelper(TWO, this, context);
+		if (!isInteger() || isNegative())
+			throw new ArithmeticException("value must be a non-negative integer");
+		if (lessThan(TWO)) return ONE;
+		return factorialHelper(TWO, this, context);
 	}
 
 	/**
@@ -794,10 +795,10 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws ArithmeticException if the value is not a non-negative integer
 	 */
 	public Decimal factorial() {
-	    if (!isInteger() || isNegative())
-	        throw new ArithmeticException("value must be a non-negative integer");
-	    if (lessThan(TWO)) return ONE;
-	    return new Decimal(factorialHelper(BigInteger.TWO, this.toBigInteger()));
+		if (!isInteger() || isNegative())
+			throw new ArithmeticException("value must be a non-negative integer");
+		if (lessThan(TWO)) return ONE;
+		return new Decimal(factorialHelper(BigInteger.TWO, this.toBigInteger()));
 	}
 
 	/**
@@ -817,12 +818,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Deprecated
 	private static Decimal factorialHelper(Decimal low, Decimal high, MathContext context) {
-	    if (low.greaterThan(high)) return ONE;
-	    if (low.equals(high)) return low;
-	    Decimal mid = low.average(high, context).floor();
-	    Decimal left = factorialHelper(low, mid, context);
-	    Decimal right = factorialHelper(mid.add(ONE, context), high, context);
-	    return left.multiply(right);
+		if (low.greaterThan(high)) 	return ONE;
+		if (low.equals(high)) 		return low;
+		Decimal mid 	= low.average(high, context).floor();
+		Decimal left 	= factorialHelper(low, mid, context);
+		Decimal right 	= factorialHelper(mid.add(ONE, context), high, context);
+		return left.multiply(right);
 	}
 
 	/**
@@ -838,12 +839,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return the product of all integers in the range [low, high]
 	 */
 	private BigInteger factorialHelper(BigInteger low, BigInteger high) {
-	    if (low.compareTo(high) > 0) return BigInteger.ONE;
-	    if (low.compareTo(high) == 0) return low;
-	    BigInteger mid = low.add(high).shiftRight(1);
-	    BigInteger left = factorialHelper(low, mid);
-	    BigInteger right = factorialHelper(mid.add(BigInteger.ONE), high);
-	    return left.multiply(right);
+		if (low.compareTo(high) > 0) 	return BigInteger.ONE;
+		if (low.compareTo(high) == 0) 	return low;
+		BigInteger mid 		= low.add(high).shiftRight(1);
+		BigInteger left 	= factorialHelper(low, mid);
+		BigInteger right 	= factorialHelper(mid.add(BigInteger.ONE), high);
+		return left.multiply(right);
 	}
 
 }
