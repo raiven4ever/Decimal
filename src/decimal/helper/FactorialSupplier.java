@@ -80,9 +80,13 @@ public class FactorialSupplier {
 	 */
 	public Decimal nextPre() {
 		Decimal toReturn = value;
+		extracted();
+		return toReturn;
+	}
+
+	private void extracted() {
 		n = n.add(Decimal.ONE); // could be optimized with a dedicated increment
 		value = value.multiply(n, context);
-		return toReturn;
 	}
 
 	/**
@@ -107,8 +111,7 @@ public class FactorialSupplier {
 	 * @return the next factorial value
 	 */
 	public Decimal nextPost() {
-		n = n.add(Decimal.ONE);
-		value = value.multiply(n, context);
+		extracted();
 		return value;
 	}
 
