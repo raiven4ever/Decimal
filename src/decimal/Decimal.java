@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 import decimal.operations.ArithmeticBasics;
 
@@ -76,7 +77,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@link BigDecimal} to wrap (must not be {@code null})
 	 */
 	public Decimal(BigDecimal value) {
-		this.value = value;
+		this.value = Objects.requireNonNull(value, "value must not be null");
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code BigInteger} to wrap (must not be {@code null})
 	 */
 	public Decimal(BigInteger value) {
-		this.value = new BigDecimal(value);
+		this.value = new BigDecimal(Objects.requireNonNull(value, "value must not be null"));
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public Decimal(String value) {
 		try {
-			this.value = new BigDecimal(value);
+			this.value = new BigDecimal(Objects.requireNonNull(value, "value must not be null"));
 		} catch (NumberFormatException e) {
 			// Re-throw so the exception appears to come from Decimal
 			throw new NumberFormatException(e.toString());
@@ -133,7 +134,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 *         positive infinity, or negative infinity
 	 */
 	public Decimal(double value) {
-		this.value = new BigDecimal(value);
+		this.value = new BigDecimal(Objects.requireNonNull(value, "value must not be null"));
 	}
 
 	/**
@@ -144,7 +145,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code int} value to wrap
 	 */
 	public Decimal(int value) {
-		this.value = new BigDecimal(value);
+		this.value = new BigDecimal(Objects.requireNonNull(value, "value must not be null"));
 	}
 
 	/**
@@ -155,7 +156,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @param value the {@code long} value to wrap
 	 */
 	public Decimal(long value) {
-		this.value = new BigDecimal(value);
+		this.value = new BigDecimal(Objects.requireNonNull(value, "value must not be null"));
 	}
 
 

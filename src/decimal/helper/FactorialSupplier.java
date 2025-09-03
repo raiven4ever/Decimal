@@ -72,6 +72,33 @@ public class FactorialSupplier {
 	}
 
 	/**
+	 * Creates a new {@code FactorialSupplier} starting at the given value,
+	 * using {@link MathContext#UNLIMITED} as the default context.
+	 *
+	 * <p>If {@code start = 0}, the initial factorial is {@code 0! = 1}.
+	 * Otherwise the initial factorial is {@code start!}.</p>
+	 *
+	 * @param start the starting {@code n}
+	 */
+	public FactorialSupplier(Decimal start) {
+		n = start;
+		context = MathContext.UNLIMITED;
+		value = n.factorial();
+	}
+
+	/**
+	 * Increments {@code n} by one and multiplies {@code value} by the new {@code n}.
+	 *
+	 * <p><strong>Developer note:</strong> This helper method exists only to bundle
+	 * the logic of advancing {@code n} and updating the factorial value. It is used
+	 * internally by {@code nextPre} and {@code nextPost} methods.</p>
+	 */
+	private void factorialIncrement() {
+		n = n.add(Decimal.ONE); // could be optimized with a dedicated increment
+		value = value.multiply(n, context);
+	}
+
+	/**
 	 * Returns the current factorial, then advances to the next factorial.
 	 *
 	 * <p>Equivalent to "post-return, pre-compute".</p>
@@ -80,13 +107,8 @@ public class FactorialSupplier {
 	 */
 	public Decimal nextPre() {
 		Decimal toReturn = value;
-		extracted();
+		factorialIncrement();
 		return toReturn;
-	}
-
-	private void extracted() {
-		n = n.add(Decimal.ONE); // could be optimized with a dedicated increment
-		value = value.multiply(n, context);
 	}
 
 	/**
@@ -97,8 +119,8 @@ public class FactorialSupplier {
 	 */
 	public Decimal nextPre(int steps) {
 		Decimal toReturn = value;
-		for (int i = 0; i < steps; i++) { // avoids mutating steps directly
-			value = value.multiply(n, context);
+		for (int i = 0; i < steps; i++) {
+			factorialIncrement();
 		}
 		return toReturn;
 	}
@@ -111,7 +133,7 @@ public class FactorialSupplier {
 	 * @return the next factorial value
 	 */
 	public Decimal nextPost() {
-		extracted();
+		factorialIncrement();
 		return value;
 	}
 
@@ -123,8 +145,9 @@ public class FactorialSupplier {
 	 */
 	public Decimal nextPost(int steps) {
 		for (int i = 0; i < steps; i++) {
-			value = value.multiply(n, context);
+			factorialIncrement();
 		}
 		return value;
 	}
+
 }
