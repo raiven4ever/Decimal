@@ -57,33 +57,79 @@ public class FactorialSupplier {
 	private MathContext context;
 
 	/**
-	 * Creates a new {@code FactorialSupplier} starting at the given value.
+	 * Creates a new {@code FactorialSupplier} starting at the given value,
+	 * using the specified {@link MathContext}.
 	 *
-	 * <p>If {@code start = 0}, the initial factorial is {@code 0! = 1}.
-	 * Otherwise the initial factorial is {@code start!}.</p>
+	 * <p>The starting value must be a non-negative integer. If it is not,
+	 * an {@link IllegalArgumentException} is thrown.</p>
 	 *
 	 * @param start   the starting {@code n}
 	 * @param context the math context to use for multiplications
+	 * @throws IllegalArgumentException if {@code start} is negative or not an integer
 	 */
 	public FactorialSupplier(Decimal start, MathContext context) {
+		if (!start.isInteger() || start.isNegative())
+			throw new IllegalArgumentException("start must be an non-negative integer");
 		n = start;
 		this.context = context;
 		value = n.factorial(); // uses Decimal.factorial()
 	}
 
 	/**
-	 * Creates a new {@code FactorialSupplier} starting at the given value,
-	 * using {@link MathContext#UNLIMITED} as the default context.
+	 * Creates a new {@code FactorialSupplier} starting at the given int value,
+	 * using the specified {@link MathContext}.
 	 *
-	 * <p>If {@code start = 0}, the initial factorial is {@code 0! = 1}.
-	 * Otherwise the initial factorial is {@code start!}.</p>
+	 * @param start   the starting integer value for {@code n}
+	 * @param context the math context to use for multiplications
+	 * @throws IllegalArgumentException if {@code start} is negative
+	 */
+	public FactorialSupplier(int start, MathContext context) {
+		this(new Decimal(start), context);
+	}
+
+	/**
+	 * Creates a new {@code FactorialSupplier} starting at the given long value,
+	 * using the specified {@link MathContext}.
+	 *
+	 * @param start   the starting long value for {@code n}
+	 * @param context the math context to use for multiplications
+	 * @throws IllegalArgumentException if {@code start} is negative
+	 */
+	public FactorialSupplier(long start, MathContext context) {
+		this(new Decimal(start), context);
+	}
+
+	/**
+	 * Creates a new {@code FactorialSupplier} starting at the given value,
+	 * using {@link MathContext#UNLIMITED}.
 	 *
 	 * @param start the starting {@code n}
+	 * @throws IllegalArgumentException if {@code start} is negative or not an integer
 	 */
 	public FactorialSupplier(Decimal start) {
-		n = start;
-		context = MathContext.UNLIMITED;
-		value = n.factorial();
+		this(start, MathContext.UNLIMITED);
+	}
+
+	/**
+	 * Creates a new {@code FactorialSupplier} starting at the given int value,
+	 * using {@link MathContext#UNLIMITED}.
+	 *
+	 * @param start the starting integer value for {@code n}
+	 * @throws IllegalArgumentException if {@code start} is negative
+	 */
+	public FactorialSupplier(int start) {
+		this(new Decimal(start), MathContext.UNLIMITED);
+	}
+
+	/**
+	 * Creates a new {@code FactorialSupplier} starting at the given long value,
+	 * using {@link MathContext#UNLIMITED}.
+	 *
+	 * @param start the starting long value for {@code n}
+	 * @throws IllegalArgumentException if {@code start} is negative
+	 */
+	public FactorialSupplier(long start) {
+		this(new Decimal(start), MathContext.UNLIMITED);
 	}
 
 	/**
