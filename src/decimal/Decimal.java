@@ -399,11 +399,18 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * <p>The result is equivalent to calling
 	 * {@link BigDecimal#round(MathContext)} on the underlying value.</p>
 	 *
+	 * <p><strong>Developer note:</strong> This method is deprecated in favor of
+	 * using {@link #setScale(int, RoundingMode)} for explicit scale and rounding
+	 * control, or {@link #round()} for the common case of rounding to the nearest
+	 * integer.</p>
+	 *
 	 * @param context the {@link MathContext} specifying precision and rounding mode
 	 * @return a {@code Decimal} representing this value rounded according to {@code context}
+	 * @deprecated use {@link #setScale(int, RoundingMode)} or {@link #round()} instead
 	 */
+	@Deprecated
 	public Decimal round(MathContext context) {
-		return new Decimal(value.round(context));
+	    return new Decimal(value.round(context));
 	}
 
 	/**
@@ -683,6 +690,18 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return !isEven();
 	}
 
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * rounded to the nearest integer using {@link RoundingMode#HALF_UP}.
+	 *
+	 * <p>This is the conventional "schoolbook" rounding mode, where ties
+	 * (e.g. 2.5) are rounded up to the next integer (3).</p>
+	 *
+	 * @return a {@code Decimal} representing this value rounded to the nearest integer
+	 */
+	public Decimal round() {
+	    return setScale(0, RoundingMode.HALF_UP);
+	}
 
 	/**
 	 * Returns the sign of this {@code Decimal}.
