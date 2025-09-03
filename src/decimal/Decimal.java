@@ -377,6 +377,22 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	}
 
 	/**
+	 * Returns the remainder of dividing this {@code Decimal} by the given divisor,
+	 * using the specified {@link MathContext}.
+	 *
+	 * <p>This is equivalent to {@link BigDecimal#remainder(BigDecimal, MathContext)}
+	 * on the underlying value.</p>
+	 *
+	 * @param divisor the value by which this {@code Decimal} is divided
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the remainder after division
+	 * @throws ArithmeticException if {@code divisor} is zero
+	 */
+	public Decimal remainder(Decimal divisor, MathContext context) {
+		return new Decimal(value.remainder(divisor.value, context));
+	}
+
+	/**
 	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
 	 * rounded according to the supplied {@link MathContext}.
 	 *
@@ -460,6 +476,21 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public Decimal divide(Decimal divisor) {
 		return divide(divisor, DEFAULT_CONTEXT);
+	}
+
+	/**
+	 * Returns the remainder of dividing this {@code Decimal} by the given divisor,
+	 * using exact precision (no {@link MathContext}).
+	 *
+	 * <p>This is equivalent to {@link BigDecimal#remainder(BigDecimal)}
+	 * on the underlying value.</p>
+	 *
+	 * @param divisor the value by which this {@code Decimal} is divided
+	 * @return the remainder after division
+	 * @throws ArithmeticException if {@code divisor} is zero
+	 */
+	public Decimal remainder(Decimal divisor) {
+		return new Decimal(value.remainder(divisor.value));
 	}
 
 	/**
@@ -622,6 +653,36 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public boolean isNegative() {
 		return signum() < 0;
 	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is an even integer.
+	 *
+	 * <p>An even number is defined as an integer divisible by 2 with no remainder.
+	 * If this value is not an integer, an {@link IllegalStateException} is thrown.</p>
+	 *
+	 * @return {@code true} if this value is even
+	 * @throws IllegalStateException if this value is not an integer
+	 */
+	public boolean isEven() {
+		if (!isInteger())
+			throw new IllegalStateException("Non-integers are neither even or odd");
+		return remainder(TWO).equals(ZERO);
+	}
+
+	/**
+	 * Returns {@code true} if this {@code Decimal} is an odd integer.
+	 *
+	 * <p>An odd number is defined as an integer that is not divisible by 2
+	 * without a remainder. If this value is not an integer, an
+	 * {@link IllegalStateException} is thrown.</p>
+	 *
+	 * @return {@code true} if this value is odd
+	 * @throws IllegalStateException if this value is not an integer
+	 */
+	public boolean isOdd() {
+		return !isEven();
+	}
+
 
 	/**
 	 * Returns the sign of this {@code Decimal}.
