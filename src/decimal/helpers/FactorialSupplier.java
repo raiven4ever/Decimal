@@ -1,4 +1,4 @@
-package decimal.helper;
+package decimal.helpers;
 
 import java.math.MathContext;
 
