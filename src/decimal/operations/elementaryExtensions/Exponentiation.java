@@ -1,36 +1,51 @@
 package decimal.operations.elementaryExtensions;
 
+import static decimal.Decimal.ONE;
+import static decimal.Decimal.TWO;
+import static decimal.Decimal.ZERO;
+
 import java.math.MathContext;
 
 import decimal.Decimal;
-import decimal.helpers.FactorialSupplier;
 import decimal.helpers.Summation;
 
 public class Exponentiation {
-
-	public static Decimal exp(Decimal exponent, MathContext context) {
-		if (exponent.equals(Decimal.ZERO))
-				return Decimal.ONE;
-		if (exponent.lessThan(Decimal.ZERO))
-			return Decimal.ONE.divide(exp(exponent.negate(), context), context);
-		if (exponent.isInteger()) {
-			integerExponentiation(e(context), exponent, context);
-		}
-		return null;
+	
+	private static Decimal _3 = new Decimal(3);
+	private static Decimal _9 = new Decimal(9);
+	//this is basically this bad boy
+	/*	∑k=0∞2/3(2k+1)⋅9k
+	 * */
+	//if i wasnt less lazy, i wouldve done a machin-like implementation
+	//but that requires arctanh implementation
+	//and bbp is too many terms
+	private static Decimal ln2(MathContext context) {
+		//you know, this wouldn't be a pain in this ass
+		//if i had an interpreter that interprets string of a basic mathematical expression
+		//and spits out a function
+		return new Summation(k -> TWO.divide(_3.multiply(TWO.multiply(k, context).add(ONE, context), context).multiply(integerExponentiation(_9, k, context), context), context)).sumInfinite(0, context);
 	}
 	
-	private static void integerExponentiation(Decimal e, Decimal exponent, MathContext context) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) {
+		System.out.println(ln2(new MathContext(1000)));
+	}
+	
+	//i need the context in case base is not an integer
+	public static Decimal integerExponentiation(Decimal base, Decimal exponent, MathContext context) {
+		if (exponent.equals(ZERO)) return ONE;
+		if (exponent.lessThan(ZERO)) {
+			if (base.equals(ZERO))
+				throw new ArithmeticException("division by zero");
+			return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
+		}
 		
+		Decimal result = ONE;
+	    while (exponent.greaterThan(ZERO)) {
+	        if (exponent.isOdd())
+	        	result = result.multiply(base, context);
+	        base = base.multiply(base, context);
+	        exponent = exponent.divide(TWO, context).floor();
+	    }
+		return result;
 	}
-
-	public static Decimal e(MathContext context) {
-		// i'm like, aware of better methods like binary splitting or something
-		// but im choosing it to do the old way so i can be limited by the precision allowed by the math context
-		// instead of arbitrarily choosing a specific arbitrary number of terms or choosing an arbitrary precision
-		FactorialSupplier nFactorial = new FactorialSupplier(0);
-		Summation e = new Summation(n -> Decimal.ONE.divide(nFactorial.nextPre(), context));
-		return e.sumInfinite(0, context);
-	}
-
 }
