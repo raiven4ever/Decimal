@@ -637,6 +637,49 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public boolean greaterThanOrEqualTo(Decimal other) {
 		return compareTo(other) >= 0;
 	}
+	
+	/**
+	 * Enumeration of bound types used for interval comparisons.
+	 *
+	 * <ul>
+	 *   <li>{@link #EXCLUSIVE} – the boundary is excluded from the interval.</li>
+	 *   <li>{@link #INCLUSIVE} – the boundary is included in the interval.</li>
+	 * </ul>
+	 */
+	public static enum BoundType {
+	    EXCLUSIVE,
+	    INCLUSIVE
+	}
+
+	/**
+	 * Checks whether this {@code Decimal} lies within the specified interval.
+	 *
+	 * <p>The interval is defined by a start value, an end value, and the
+	 * inclusivity or exclusivity of each bound.</p>
+	 *
+	 * <p>Examples (using bracket/parenthesis notation):</p>
+	 * <ul>
+	 *   <li>{@code x.inInterval(a, b, INCLUSIVE, INCLUSIVE)} → interval {@code [a, b]} → checks if {@code a ≤ x ≤ b}</li>
+	 *   <li>{@code x.inInterval(a, b, EXCLUSIVE, INCLUSIVE)} → interval {@code (a, b]} → checks if {@code a < x ≤ b}</li>
+	 *   <li>{@code x.inInterval(a, b, INCLUSIVE, EXCLUSIVE)} → interval {@code [a, b)} → checks if {@code a ≤ x < b}</li>
+	 *   <li>{@code x.inInterval(a, b, EXCLUSIVE, EXCLUSIVE)} → interval {@code (a, b)} → checks if {@code a < x < b}</li>
+	 * </ul>
+	 *
+	 * @param start the lower bound of the interval
+	 * @param end   the upper bound of the interval
+	 * @param left  the bound type for the lower bound (inclusive or exclusive)
+	 * @param right the bound type for the upper bound (inclusive or exclusive)
+	 * @return {@code true} if this value is within the interval, {@code false} otherwise
+	 */
+	public boolean inInterval(Decimal start, Decimal end, BoundType left, BoundType right) {
+	    return switch (left) {
+		    case EXCLUSIVE -> greaterThan(start);
+		    case INCLUSIVE -> greaterThanOrEqualTo(start);
+		} && switch (right) {
+		    case EXCLUSIVE -> lessThan(end);
+		    case INCLUSIVE -> lessThanOrEqualTo(end);
+		};
+	}
 
 	/**
 	 * Compares this {@code Decimal} with the specified object for equality.
@@ -657,6 +700,18 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	@Override
 	public boolean equals(Object other) {
 		return value.equals(other);
+	}
+
+	/**
+	 * Returns the sign of this {@code Decimal}.
+	 *
+	 * <p>The result is {@code -1} if negative, {@code 0} if zero,
+	 * and {@code 1} if positive.</p>
+	 *
+	 * @return the signum of this value
+	 */
+	public int signum() {
+		return value.signum();
 	}
 
 	/**
@@ -726,18 +781,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public Decimal round() {
 	    return setScale(0, RoundingMode.HALF_UP);
-	}
-
-	/**
-	 * Returns the sign of this {@code Decimal}.
-	 *
-	 * <p>The result is {@code -1} if negative, {@code 0} if zero,
-	 * and {@code 1} if positive.</p>
-	 *
-	 * @return the signum of this value
-	 */
-	public int signum() {
-		return value.signum();
 	}
 
 	/**
@@ -955,23 +998,6 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 
 	/**
 	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
-	 * shifted right by the specified number of bits.
-	 *
-	 * <p>This method is only valid if the current value is an integer.
-	 * A right shift by {@code n} is equivalent to integer division by
-	 * {@code 2^n}.</p>
-	 *
-	 * @param n the number of bit positions to shift
-	 * @return a new {@code Decimal} equal to {@code this >> n}
-	 * @throws IllegalArgumentException if this value is not an integer
-	 */
-	public Decimal shiftRight(int n) {
-	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
-	    return new Decimal(value.toBigInteger().shiftRight(n));
-	}
-
-	/**
-	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
 	 * shifted left by the specified number of bits.
 	 *
 	 * <p>This method is only valid if the current value is an integer.
@@ -987,5 +1013,21 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	    return new Decimal(value.toBigInteger().shiftLeft(n));
 	}
 
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * shifted right by the specified number of bits.
+	 *
+	 * <p>This method is only valid if the current value is an integer.
+	 * A right shift by {@code n} is equivalent to integer division by
+	 * {@code 2^n}.</p>
+	 *
+	 * @param n the number of bit positions to shift
+	 * @return a new {@code Decimal} equal to {@code this >> n}
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal shiftRight(int n) {
+	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
+	    return new Decimal(value.toBigInteger().shiftRight(n));
+	}
 
 }
