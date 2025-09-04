@@ -41,7 +41,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Constant representing the decimal value {@code 2}.
 	 */
 	public static final Decimal TWO = new Decimal(2);
-	
+
 	/**
 	 * Constant representing the maximum finite {@code double} value
 	 * as a {@code Decimal}.
@@ -435,7 +435,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	@Deprecated
 	public Decimal round(MathContext context) {
-	    return new Decimal(value.round(context));
+		return new Decimal(value.round(context));
 	}
 
 	/**
@@ -637,7 +637,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public boolean greaterThanOrEqualTo(Decimal other) {
 		return compareTo(other) >= 0;
 	}
-	
+
 	/**
 	 * Enumeration of bound types used for interval comparisons.
 	 *
@@ -647,8 +647,8 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * </ul>
 	 */
 	public static enum BoundType {
-	    EXCLUSIVE,
-	    INCLUSIVE
+		EXCLUSIVE,
+		INCLUSIVE
 	}
 
 	/**
@@ -672,12 +672,12 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return {@code true} if this value is within the interval, {@code false} otherwise
 	 */
 	public boolean inInterval(Decimal start, Decimal end, BoundType left, BoundType right) {
-	    return switch (left) {
-		    case EXCLUSIVE -> greaterThan(start);
-		    case INCLUSIVE -> greaterThanOrEqualTo(start);
+		return switch (left) {
+		case EXCLUSIVE -> greaterThan(start);
+		case INCLUSIVE -> greaterThanOrEqualTo(start);
 		} && switch (right) {
-		    case EXCLUSIVE -> lessThan(end);
-		    case INCLUSIVE -> lessThanOrEqualTo(end);
+		case EXCLUSIVE -> lessThan(end);
+		case INCLUSIVE -> lessThanOrEqualTo(end);
 		};
 	}
 
@@ -735,7 +735,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	/**
 	 * Returns {@code true} if this {@code Decimal} is strictly negative.
 	 *
-	 * @return {@code true} if this value < 0
+	 * @return {@code true} if this value {@literal <} 0
 	 */
 	public boolean isNegative() {
 		return signum() < 0;
@@ -780,7 +780,7 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @return a {@code Decimal} representing this value rounded to the nearest integer
 	 */
 	public Decimal round() {
-	    return setScale(0, RoundingMode.HALF_UP);
+		return setScale(0, RoundingMode.HALF_UP);
 	}
 
 	/**
@@ -1009,8 +1009,8 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws IllegalArgumentException if this value is not an integer
 	 */
 	public Decimal shiftLeft(int n) {
-	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
-	    return new Decimal(value.toBigInteger().shiftLeft(n));
+		if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
+		return new Decimal(value.toBigInteger().shiftLeft(n));
 	}
 
 	/**
@@ -1026,8 +1026,8 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * @throws IllegalArgumentException if this value is not an integer
 	 */
 	public Decimal shiftRight(int n) {
-	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
-	    return new Decimal(value.toBigInteger().shiftRight(n));
+		if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
+		return new Decimal(value.toBigInteger().shiftRight(n));
 	}
 
 }
