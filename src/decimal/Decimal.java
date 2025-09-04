@@ -41,6 +41,31 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Constant representing the decimal value {@code 2}.
 	 */
 	public static final Decimal TWO = new Decimal(2);
+	
+	/**
+	 * Constant representing the maximum finite {@code double} value
+	 * as a {@code Decimal}.
+	 *
+	 * <p>Equivalent to {@link Double#MAX_VALUE} wrapped in a {@code Decimal}.</p>
+	 */
+	public static final Decimal DOUBLE_MAX_VALUE = new Decimal(Double.MAX_VALUE);
+
+	/**
+	 * Constant representing the maximum {@code int} value
+	 * as a {@code Decimal}.
+	 *
+	 * <p>Equivalent to {@link Integer#MAX_VALUE} wrapped in a {@code Decimal}.</p>
+	 */
+	public static final Decimal INTEGER_MAX_VALUE = new Decimal(Integer.MAX_VALUE);
+
+	/**
+	 * Constant representing the maximum {@code long} value
+	 * as a {@code Decimal}.
+	 *
+	 * <p>Equivalent to {@link Long#MAX_VALUE} wrapped in a {@code Decimal}.</p>
+	 */
+	public static final Decimal LONG_MAX_VALUE = new Decimal(Long.MAX_VALUE);
+
 
 	/**
 	 * Default {@link MathContext} to be used when no explicit
