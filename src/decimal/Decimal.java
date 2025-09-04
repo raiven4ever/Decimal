@@ -953,4 +953,39 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return left.multiply(right);
 	}
 
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * shifted right by the specified number of bits.
+	 *
+	 * <p>This method is only valid if the current value is an integer.
+	 * A right shift by {@code n} is equivalent to integer division by
+	 * {@code 2^n}.</p>
+	 *
+	 * @param n the number of bit positions to shift
+	 * @return a new {@code Decimal} equal to {@code this >> n}
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal shiftRight(int n) {
+	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
+	    return new Decimal(value.toBigInteger().shiftRight(n));
+	}
+
+	/**
+	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
+	 * shifted left by the specified number of bits.
+	 *
+	 * <p>This method is only valid if the current value is an integer.
+	 * A left shift by {@code n} is equivalent to multiplying by
+	 * {@code 2^n}.</p>
+	 *
+	 * @param n the number of bit positions to shift
+	 * @return a new {@code Decimal} equal to {@code this << n}
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal shiftLeft(int n) {
+	    if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
+	    return new Decimal(value.toBigInteger().shiftLeft(n));
+	}
+
+
 }
