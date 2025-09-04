@@ -38,14 +38,29 @@ public class Exponentiation {
 				throw new ArithmeticException("division by zero");
 			return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
 		}
-		
-		Decimal result = ONE;
-	    while (exponent.greaterThan(ZERO)) {
-	        if (exponent.isOdd())
-	        	result = result.multiply(base, context);
-	        base = base.multiply(base, context);
-	        exponent = exponent.divide(TWO, context).floor();
-	    }
-		return result;
+		try {
+			return new Decimal(base.toBigDecimal().pow(exponent.toInt(), context)); //piggyback on this hoe
+		} catch (ArithmeticException e) {
+			Decimal result = ONE;
+		    while (exponent.greaterThan(ZERO)) {
+		        if (exponent.isOdd())
+		        	result = result.multiply(base, context);
+		        base = base.multiply(base, context);
+		        exponent = exponent.divide(TWO, context).floor();
+		    }
+			return result;
+		}
 	}
+	
+	public static Decimal exp(Decimal exponent, MathContext context) {
+		if (exponent.equals(ZERO)) return ONE;
+		if (exponent.lessThan(ZERO)) return ONE.divide(exp(exponent.negate(), context), context);
+		Decimal ln2 = ln2(context);
+		if (exponent.greaterThan(ln2.divide(TWO, context))) {
+			Decimal k = exponent.divide(ln2, context).round();
+			Decimal r = exponent.subtract(k.multiply(ln2, context), context);
+			return integerExponentiation(TWO, k, context).multiply(exp(r, context), context);
+		}
+	}
+	
 }
