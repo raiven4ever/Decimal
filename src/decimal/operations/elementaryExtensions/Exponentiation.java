@@ -4,6 +4,7 @@ import static decimal.Decimal.ONE;
 import static decimal.Decimal.TWO;
 import static decimal.Decimal.ZERO;
 
+import java.math.BigInteger;
 import java.math.MathContext;
 
 import decimal.Decimal;
@@ -32,21 +33,23 @@ public class Exponentiation {
 	
 	//i need the context in case base is not an integer
 	public static Decimal integerExponentiation(Decimal base, Decimal exponent, MathContext context) {
+		if (!exponent.isInteger()) throw new IllegalArgumentException("exponent must be an integer");
 		if (exponent.equals(ZERO)) return ONE;
 		if (exponent.lessThan(ZERO)) {
 			if (base.equals(ZERO))
 				throw new ArithmeticException("division by zero");
 			return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
 		}
-		try {
+		if (exponent.lessThanOrEqualTo(new Decimal(Integer.MAX_VALUE))) {
 			return new Decimal(base.toBigDecimal().pow(exponent.toInt(), context)); //piggyback on this hoe
-		} catch (ArithmeticException e) {
+		}
+		else {
 			Decimal result = ONE;
 		    while (exponent.greaterThan(ZERO)) {
 		        if (exponent.isOdd())
 		        	result = result.multiply(base, context);
 		        base = base.multiply(base, context);
-		        exponent = exponent.divide(TWO, context).floor();
+		        exponent = new Decimal(exponent.toBigInteger().shiftRight(1));
 		    }
 			return result;
 		}
