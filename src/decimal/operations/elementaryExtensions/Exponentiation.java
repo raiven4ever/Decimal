@@ -13,24 +13,40 @@ import decimal.helpers.FactorialSupplier;
 import decimal.helpers.Summation;
 
 /**
- * Utility class for exponentiation-related operations.
+ * Utility class for exponentiation-related operations on {@link Decimal}.
  *
- * <p>This class provides implementations and placeholders for
- * exponentiation, logarithms, and exponential functions on {@link Decimal}.
- * It is intended as a companion to {@link Decimal} for advanced
- * mathematical operations.</p>
+ * <p>This class provides methods for computing powers, exponentials,
+ * and logarithms, as well as supporting identities like range reduction
+ * and series expansions.</p>
  *
  * <p><strong>Developer notes:</strong></p>
  * <ul>
- *   <li>Constants such as 3 and 9 are cached internally for convenience.</li>
- *   <li>The eventual goal is to support multiple strategies (e.g., Machin-like
- *       formulas, BBP-type series, iterative methods) for logarithms and
- *       exponentials.</li>
- *   <li>Currently, some methods are placeholders awaiting proper
- *       implementation.</li>
+ *   <li>Caches small constants (e.g., 3 and 9) internally for convenience.</li>
+ *   <li>Implements or plans to implement multiple strategies, such as:
+ *     <ul>
+ *       <li>Machin-like formulas (require {@code arctanh}),</li>
+ *       <li>BBP-type series,</li>
+ *       <li>Taylor series expansions,</li>
+ *       <li>Exponentiation by squaring for integer powers.</li>
+ *     </ul>
+ *   </li>
+ *   <li>Some methods are stubs or rely on helper classes like
+ *       {@code Summation} and {@code FactorialSupplier} for series
+ *       computation.</li>
  * </ul>
+ *
+ * <p>This class cannot be instantiated.</p>
  */
 public class Exponentiation {
+
+	/**
+	 * Private constructor to prevent instantiation.
+	 *
+	 * @throws AssertionError always, since this class is not meant to be instantiated
+	 */
+	private Exponentiation() {
+		throw new AssertionError("No instances for you!");
+	}
 
 	/** Constant 3, cached as a {@code Decimal}. */
 	private static Decimal _3 = new Decimal(3);
@@ -362,6 +378,34 @@ public class Exponentiation {
 
 		// For general case: base^exponent = exp(exponent * ln(base))
 		return exp(exponent.multiply(ln(base, context)), context);
+	}
+
+	/**
+	 * Computes the logarithm of a given value with the specified base.
+	 *
+	 * <p>The result is defined as:</p>
+	 * <pre>
+	 *   log_base(antiLogarithm) = ln(antiLogarithm) / ln(base)
+	 * </pre>
+	 *
+	 * <p><strong>Developer notes:</strong></p>
+	 * <ul>
+	 *   <li>No explicit guardrails are added here; validation (e.g.,
+	 *       ensuring {@code base > 0}, {@code base ≠ 1}, and
+	 *       {@code antiLogarithm > 0}) is delegated to {@link #ln(Decimal, MathContext)}.</li>
+	 *   <li>Precision and rounding behavior are controlled by the provided
+	 *       {@link MathContext}.</li>
+	 * </ul>
+	 *
+	 * @param base          the logarithm base (must be positive and not equal to 1)
+	 * @param antiLogarithm the value whose logarithm is to be computed (must be positive)
+	 * @param context       the {@link MathContext} specifying precision and rounding
+	 * @return the logarithm of {@code antiLogarithm} with respect to {@code base}
+	 * @throws IllegalArgumentException if the input is invalid (as enforced by {@link #ln})
+	 */
+	public static Decimal log(Decimal base, Decimal antiLogarithm, MathContext context) {
+		// no guardrails here, delegated to ln()
+		return ln(antiLogarithm, context).divide(ln(base, context), context);
 	}
 
 }

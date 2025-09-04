@@ -7,20 +7,33 @@ import decimal.Decimal;
 /**
  * Utility class providing basic arithmetic operations for {@link Decimal}.
  *
- * <p><strong>Developer notes:</strong>
+ * <p>This class defines the fundamental four operations
+ * (addition, subtraction, multiplication, and division) as
+ * {@code static} methods.</p>
+ *
+ * <p><strong>Developer notes:</strong></p>
  * <ul>
- *   <li>This class is the first in a series
- *       of operation helpers extracted into separate utility classes.</li>
- *   <li>Operation implementations are placed here as static methods
- *       for now, rather than as instance methods, to keep {@code Decimal}
- *       itself lightweight.</li>
+ *   <li>This is the first in a planned series of operation helper classes.</li>
+ *   <li>Keeping these as static methods avoids bloating {@code Decimal}
+ *       with low-level arithmetic details.</li>
+ *   <li>Each method delegates directly to the corresponding
+ *       {@link BigDecimal} operation, wrapped back into a {@code Decimal}.</li>
  * </ul>
  *
- * <p>All methods return a new {@code Decimal} instance wrapping the result
- * of the corresponding {@link BigDecimal} operation with the given
- * {@link MathContext}.
+ * <p>All methods return new immutable {@code Decimal} instances.</p>
+ *
+ * <p>This class cannot be instantiated.</p>
  */
 public class ArithmeticBasics {
+
+	/**
+	 * Private constructor to prevent instantiation.
+	 *
+	 * @throws AssertionError always, since this class is not meant to be instantiated
+	 */
+	private ArithmeticBasics() {
+		throw new AssertionError("No instances for you!");
+	}
 
 	/**
 	 * Returns a new {@code Decimal} whose value is the sum of
