@@ -1000,34 +1000,187 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
 	 * shifted left by the specified number of bits.
 	 *
-	 * <p>This method is only valid if the current value is an integer.
-	 * A left shift by {@code n} is equivalent to multiplying by
-	 * {@code 2^n}.</p>
+	 * <p>Equivalent to multiplying the integer value by {@code 2^n}.
+	 * Only valid if this {@code Decimal} is an integer.</p>
 	 *
-	 * @param n the number of bit positions to shift
+	 * @param n the number of bits to shift
 	 * @return a new {@code Decimal} equal to {@code this << n}
 	 * @throws IllegalArgumentException if this value is not an integer
 	 */
 	public Decimal shiftLeft(int n) {
-		if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
-		return new Decimal(value.toBigInteger().shiftLeft(n));
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().shiftLeft(n));
 	}
 
 	/**
 	 * Returns a new {@code Decimal} whose value is this {@code Decimal}
 	 * shifted right by the specified number of bits.
 	 *
-	 * <p>This method is only valid if the current value is an integer.
-	 * A right shift by {@code n} is equivalent to integer division by
-	 * {@code 2^n}.</p>
+	 * <p>Equivalent to dividing the integer value by {@code 2^n}.
+	 * Only valid if this {@code Decimal} is an integer.</p>
 	 *
-	 * @param n the number of bit positions to shift
+	 * @param n the number of bits to shift
 	 * @return a new {@code Decimal} equal to {@code this >> n}
 	 * @throws IllegalArgumentException if this value is not an integer
 	 */
 	public Decimal shiftRight(int n) {
-		if (!isInteger()) throw new IllegalArgumentException(toString() + " must be an integer");
-		return new Decimal(value.toBigInteger().shiftRight(n));
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().shiftRight(n));
+	}
+
+	/**
+	 * Returns the bitwise AND of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code this & value}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal and(Decimal value) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger()
+				.and(Decimals.requireInteger(value).toBigInteger()));
+	}
+
+	/**
+	 * Returns the bitwise OR of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code this | value}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal or(Decimal value) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger()
+				.or(Decimals.requireInteger(value).toBigInteger()));
+	}
+
+	/**
+	 * Returns the bitwise XOR of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code this ^ value}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal xor(Decimal value) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger()
+				.xor(Decimals.requireInteger(value).toBigInteger()));
+	}
+
+	/**
+	 * Returns the bitwise NOT of this {@code Decimal}.
+	 *
+	 * @return a new {@code Decimal} representing {@code ~this}
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal not() {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().not());
+	}
+
+	/**
+	 * Returns the bitwise AND-NOT of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code this & ~value}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal andNot(Decimal value) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger()
+				.andNot(Decimals.requireInteger(value).toBigInteger()));
+	}
+
+	/**
+	 * Returns the bitwise NAND of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code ~(this & value)}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal nand(Decimal value) {
+		return and(value).not();
+	}
+
+	/**
+	 * Returns the bitwise NOR of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code ~(this | value)}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal nor(Decimal value) {
+		return or(value).not();
+	}
+
+	/**
+	 * Returns the bitwise XNOR of this {@code Decimal} and the specified value.
+	 *
+	 * @param value the other operand
+	 * @return a new {@code Decimal} representing {@code ~(this ^ value)}
+	 * @throws IllegalArgumentException if either value is not an integer
+	 */
+	public Decimal xnor(Decimal value) {
+		return xor(value).not();
+	}
+
+	/**
+	 * Tests whether the bit at the specified index is set.
+	 *
+	 * @param n the bit index (0 is the least significant bit)
+	 * @return {@code true} if the bit is set, {@code false} otherwise
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public boolean testBit(int n) {
+		return Decimals.requireInteger(this).toBigInteger().testBit(n);
+	}
+
+	/**
+	 * Returns a new {@code Decimal} with the bit at the specified index set.
+	 *
+	 * @param n the bit index
+	 * @return a new {@code Decimal} with the specified bit set
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal setBit(int n) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().setBit(n));
+	}
+
+	/**
+	 * Returns a new {@code Decimal} with the bit at the specified index cleared.
+	 *
+	 * @param n the bit index
+	 * @return a new {@code Decimal} with the specified bit cleared
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal clearBit(int n) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().clearBit(n));
+	}
+
+	/**
+	 * Returns a new {@code Decimal} with the bit at the specified index flipped.
+	 *
+	 * @param n the bit index
+	 * @return a new {@code Decimal} with the specified bit flipped
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public Decimal flipBit(int n) {
+		return new Decimal(Decimals.requireInteger(this).toBigInteger().flipBit(n));
+	}
+
+	/**
+	 * Returns the number of bits in the minimal two's-complement representation
+	 * of this {@code Decimal}.
+	 *
+	 * @return the bit length of this integer value
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public int bitLength() {
+		return Decimals.requireInteger(this).toBigInteger().bitLength();
+	}
+
+	/**
+	 * Returns the number of set bits (population count) in the two's-complement
+	 * representation of this {@code Decimal}.
+	 *
+	 * @return the number of one-bits in this value
+	 * @throws IllegalArgumentException if this value is not an integer
+	 */
+	public int bitCount() {
+		return Decimals.requireInteger(this).toBigInteger().bitCount();
 	}
 
 }
