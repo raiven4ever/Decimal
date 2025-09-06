@@ -8,7 +8,12 @@ import java.math.MathContext;
 
 import decimal.Decimal;
 
+
 public class RootExtraction {
+	
+	private RootExtraction() {
+		throw new AssertionError("No instances for you!");
+	}
 	
 	private static Decimal integerRootExtraction(Decimal a, Decimal n, MathContext context) {
 		Decimal subtract = n.subtract(ONE);
