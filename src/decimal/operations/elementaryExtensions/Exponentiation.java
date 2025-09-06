@@ -13,14 +13,82 @@ import decimal.Decimal.BoundType;
 import decimal.helpers.FactorialSupplier;
 import decimal.helpers.Summation;
 
-//utility class for exponentiation belonging to elementary extensions
+/**
+ * Utility class providing methods for exponentiation within the
+ * {@code decimal.operations.elementaryExtensions} package.
+ * <p>
+ * This class implements various forms of exponentiation for the
+ * {@link decimal.Decimal} type, including:
+ * <ul>
+ *   <li>Integer exponentiation using fast exponentiation (square-and-multiply)</li>
+ *   <li>Real exponentiation via {@code exp} and {@code ln} functions,
+ *       implemented with Taylor series and atanh-based logarithm expansion</li>
+ *   <li>Range reduction techniques using {@code ln(2)} for stability</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * The primary entry point is {@link #exponentiation(Decimal, Decimal, MathContext)},
+ * which applies guardrails to handle defined and undefined cases:
+ * <ul>
+ *   <li>For integer exponents: supports zero, positive, and negative values</li>
+ *   <li>For real exponents: only defined when the base is positive</li>
+ *   <li>Throws {@link IllegalArgumentException} for undefined inputs
+ *       (e.g. negative base with non-integer exponent, or 0⁰)</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * This class cannot be instantiated.
+ * </p>
+ *
+ * @implNote
+ * Internal helper methods such as {@code exp}, {@code ln}, and {@code ln2}
+ * are not currently exposed and may be refactored into their own utility
+ * classes in the future.
+ *
+ * @see decimal.Decimal
+ * @see java.math.MathContext
+ */
 public class Exponentiation {
 
+	/**
+	 * Private constructor to prevent instantiation of this utility class.
+	 * <p>
+	 * Calling this constructor will always result in an
+	 * {@link AssertionError}, ensuring the class cannot be instantiated.
+	 * </p>
+	 *
+	 * @throws AssertionError always, since this class should not be instantiated
+	 */
 	private Exponentiation() {
 		throw new AssertionError("No instances for you!");
 	}
-	
-	//wont be exposed
+
+	/**
+	 * Computes {@code base^exponent} where the exponent is an integer.
+	 * <p>
+	 * This method uses two strategies depending on the size of the exponent:
+	 * <ul>
+	 *   <li>If the exponent is within {@link Decimal#INTEGER_MAX_VALUE}, it delegates
+	 *       to {@link java.math.BigDecimal#pow(int, MathContext)} for efficiency.</li>
+	 *   <li>If the exponent exceeds that range, it falls back to an iterative
+	 *       square-and-multiply algorithm using bit-shifting and odd/even checks.</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * <p>
+	 * This method is marked private and is not exposed publicly. It is intended
+	 * as a helper for higher-level exponentiation routines.
+	 * </p>
+	 *
+	 * @param base the {@link Decimal} base
+	 * @param exponent the exponent, required to be an integer value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the result of raising {@code base} to the given {@code exponent}
+	 * @throws ArithmeticException if {@code exponent} is negative or non-integral
+	 *                             (behavior undefined for non-integer inputs)
+	 */
 	private static Decimal integerExponentiation(Decimal base, Decimal exponent, MathContext context) {
 		if (exponent.lessThanOrEqualTo(Decimal.INTEGER_MAX_VALUE)) {
 			return new Decimal(base.toBigDecimal().pow(exponent.toInt(), context));
@@ -35,9 +103,40 @@ public class Exponentiation {
 			return result;
 		}
 	}
-	
-	//might expose this later, but it is better to move this in its own utility class in the future, maybe
-	private static Decimal exp(Decimal exponent, MathContext context) {
+
+	/**
+	 * Computes the exponential function {@code e^exponent} for a {@link Decimal} value.
+	 * <p>
+	 * This method is exposed primarily for internal use by other utility classes.
+	 * Unlike {@link #exponentiation(Decimal, Decimal, MathContext)}, it does not
+	 * enforce guardrails and assumes the input is valid.
+	 * </p>
+	 *
+	 * <p>
+	 * The implementation applies range reduction with {@code ln(2)}:
+	 * <ul>
+	 *   <li>If {@code exponent > ln(2)/2}, it rewrites
+	 *       {@code e^exponent = 2^k * e^r}, where {@code exponent = k * ln(2) + r},
+	 *       and computes recursively.</li>
+	 *   <li>Otherwise, it evaluates the Taylor series expansion
+	 *       <pre>
+	 *         e^x = Σ ( x^n / n! ),  for n = 0, 1, 2, ...
+	 *       </pre>
+	 *       using {@link Summation} and {@link FactorialSupplier}.</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * <p><b>Warning:</b> This method provides no validation of inputs
+	 * (e.g., extremely large values may converge slowly or overflow).
+	 * Use {@link #exponentiation(Decimal, Decimal, MathContext)} for a safe,
+	 * guardrailed interface.</p>
+	 *
+	 * @param exponent the exponent to raise {@code e} to
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the value of {@code e^exponent}
+	 */
+
+	public static Decimal exp(Decimal exponent, MathContext context) {
 		Decimal ln2 = ln2(context);
 
 		if (exponent.greaterThan(ln2.divide(TWO, context))) {
@@ -51,7 +150,27 @@ public class Exponentiation {
 				new Summation(n -> integerExponentiation(exponent, n, context).divide(nFactorial.nextPre(), context));
 		return powerSeries.sumInfinite(0, context); // currently implemented via Taylor series
 	}
-	
+
+	/**
+	 * Computes the natural logarithm of 2 ({@code ln(2)}).
+	 * <p>
+	 * The implementation uses an infinite series expansion based on
+	 * the Gregory–Leibniz / arctanh-derived identity:
+	 * <pre>
+	 *   ln(2) = Σ ( 2 / [ (2k + 1) * 3 * 9^k ] ),  for k = 0, 1, 2, ...
+	 * </pre>
+	 * This series is evaluated using a {@link Summation} object, with each term
+	 * generated by {@link #integerExponentiation(Decimal, Decimal, MathContext)}.
+	 * </p>
+	 *
+	 * <p>
+	 * The method is private and intended as a helper for range reduction in
+	 * exponential and logarithmic functions.
+	 * </p>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the value of {@code ln(2)} to the given precision
+	 */
 	private static Decimal _3 = new Decimal(3);
 	private static Decimal _9 = new Decimal(9);
 	private static Decimal ln2(MathContext context) {
@@ -69,7 +188,41 @@ public class Exponentiation {
 				).sumInfinite(0, context);
 	}
 
-	//it's here for now but wont be exposed until it is moved into it's own utility class
+	/**
+	 * Computes the natural logarithm ({@code ln(x)}) of a {@link Decimal} value.
+	 * <p>
+	 * The implementation first applies range reduction to bring the argument
+	 * {@code antiLogarithm} into the interval [1, 2), adjusting by powers of 2
+	 * and tracking the exponent {@code k}. The identity
+	 * <pre>
+	 *   ln(x) = k * ln(2) + ln(reducedValue)
+	 * </pre>
+	 * is then used to reconstruct the result.
+	 * </p>
+	 *
+	 * <p>
+	 * For values in [1, 2), the function evaluates
+	 * <pre>
+	 *   ln(x) = 2 * atanh( (x - 1) / (x + 1) )
+	 * </pre>
+	 * where the {@code atanh} series expansion is computed as
+	 * <pre>
+	 *   atanh(t) = Σ ( t^(2j+1) / (2j+1) ),  for j = 0, 1, 2, ...
+	 * </pre>
+	 * using a {@link Summation} helper. Internally, powers are computed via
+	 * {@link #integerExponentiation(Decimal, Decimal, MathContext)}.
+	 * </p>
+	 *
+	 * <p>
+	 * This method is private and not part of the public API. It may be moved
+	 * into a dedicated logarithm utility class in the future.
+	 * </p>
+	 *
+	 * @param antiLogarithm the argument {@code x}, required to be positive
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the natural logarithm of {@code antiLogarithm}
+	 * @throws ArithmeticException if {@code antiLogarithm} is non-positive
+	 */
 	private static Decimal ln(Decimal antiLogarithm, MathContext context) {
 		long k = 0;
 		while (!antiLogarithm.inInterval(ONE, TWO, BoundType.INCLUSIVE, BoundType.EXCLUSIVE)) {
@@ -99,9 +252,45 @@ public class Exponentiation {
 
 		return TWO.multiply(atanh.sumInfinite(0, context), context);
 	}
-	
-	//for all purposes, this will be the only method that will be exposed
-	//so it will contain all the guardrails
+
+	/**
+	 * Computes the general exponentiation {@code base^exponent} for {@link Decimal} values.
+	 * <p>
+	 * This is the only publicly exposed entry point for exponentiation and includes
+	 * all guardrails for handling special cases:
+	 * <ul>
+	 *   <li><b>Integer exponents:</b>
+	 *     <ul>
+	 *       <li>{@code base^0 = 1} for all nonzero bases</li>
+	 *       <li>Positive exponents are computed via {@link #integerExponentiation(Decimal, Decimal, MathContext)}</li>
+	 *       <li>Negative exponents are computed as the reciprocal of the positive power,
+	 *           throwing an exception if {@code base = 0}</li>
+	 *     </ul>
+	 *   </li>
+	 *   <li><b>Real exponents:</b>
+	 *     <ul>
+	 *       <li>Only defined for positive bases</li>
+	 *       <li>Computed using the identity {@code a^b = exp(b * ln(a))}, where
+	 *           {@link #exp(Decimal, MathContext)} and {@link #ln(Decimal, MathContext)} are used</li>
+	 *     </ul>
+	 *   </li>
+	 *   <li><b>Undefined cases:</b>
+	 *     <ul>
+	 *       <li>{@code 0^0}</li>
+	 *       <li>{@code 0^negative}</li>
+	 *       <li>{@code negative^non-integer}</li>
+	 *     </ul>
+	 *     result in an {@link IllegalArgumentException}
+	 *   </li>
+	 * </ul>
+	 * </p>
+	 *
+	 * @param base the {@link Decimal} base
+	 * @param exponent the {@link Decimal} exponent
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the result of raising {@code base} to the power of {@code exponent}
+	 * @throws IllegalArgumentException if the operation is mathematically undefined
+	 */
 	public static Decimal exponentiation(Decimal base, Decimal exponent, MathContext context) {
 		if (exponent.isInteger()) {
 			if (exponent.equals(ZERO) && base.notEqual(ZERO))
