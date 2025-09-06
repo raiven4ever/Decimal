@@ -107,36 +107,32 @@ public class Exponentiation {
 	/**
 	 * Computes the exponential function {@code e^exponent} for a {@link Decimal} value.
 	 * <p>
-	 * This method is exposed primarily for internal use by other utility classes.
-	 * Unlike {@link #exponentiation(Decimal, Decimal, MathContext)}, it does not
-	 * enforce guardrails and assumes the input is valid.
-	 * </p>
-	 *
-	 * <p>
-	 * The implementation applies range reduction with {@code ln(2)}:
+	 * The implementation uses range reduction with {@code ln(2)} to keep the
+	 * argument within a numerically stable interval. Specifically:
 	 * <ul>
-	 *   <li>If {@code exponent > ln(2)/2}, it rewrites
-	 *       {@code e^exponent = 2^k * e^r}, where {@code exponent = k * ln(2) + r},
-	 *       and computes recursively.</li>
-	 *   <li>Otherwise, it evaluates the Taylor series expansion
-	 *       <pre>
-	 *         e^x = Σ ( x^n / n! ),  for n = 0, 1, 2, ...
-	 *       </pre>
-	 *       using {@link Summation} and {@link FactorialSupplier}.</li>
+	 *   <li>If {@code exponent} is larger than {@code ln(2)/2}, the method
+	 *       reduces it via {@code exponent = k * ln(2) + r} and computes
+	 *       {@code 2^k * e^r} recursively.</li>
+	 *   <li>For small arguments, it evaluates the Taylor series expansion
+	 *       of {@code e^x} around 0 using a factorial supplier and summation.</li>
 	 * </ul>
 	 * </p>
 	 *
-	 * <p><b>Warning:</b> This method provides no validation of inputs
-	 * (e.g., extremely large values may converge slowly or overflow).
-	 * Use {@link #exponentiation(Decimal, Decimal, MathContext)} for a safe,
-	 * guardrailed interface.</p>
+	 * <p>
+	 * This method is currently private and not part of the public API. It may
+	 * be moved to a dedicated utility class in the future.
+	 * </p>
 	 *
-	 * @param exponent the exponent to raise {@code e} to
+	 * @param exponent the {@link Decimal} exponent to raise {@code e} to
 	 * @param context the {@link MathContext} specifying precision and rounding
 	 * @return the value of {@code e^exponent}
+	 * @implNote
+	 *   The series evaluation is done via a {@code Summation} object and
+	 *   {@code FactorialSupplier}, both of which generate the Taylor expansion
+	 *   terms on demand. The method relies on {@link #integerExponentiation(Decimal, Decimal, MathContext)}
+	 *   for efficient power computation of the reduced terms.
 	 */
-
-	public static Decimal exp(Decimal exponent, MathContext context) {
+	private static Decimal exp(Decimal exponent, MathContext context) {
 		Decimal ln2 = ln2(context);
 
 		if (exponent.greaterThan(ln2.divide(TWO, context))) {
