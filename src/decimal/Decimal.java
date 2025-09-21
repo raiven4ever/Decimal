@@ -8,6 +8,8 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 import decimal.operations.ArithmeticBasics;
+import decimal.operations.elementaryExtensions.Exponentiation;
+import decimal.operations.elementaryExtensions.RootExtraction;
 
 /**
  * Immutable wrapper class around {@link java.math.BigDecimal}.
@@ -1181,6 +1183,26 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public int bitCount() {
 		return Decimals.requireInteger(this).toBigInteger().bitCount();
+	}
+	
+	public Decimal mod(Decimal divisor, MathContext context) {
+		return subtract(divisor.multiply(divide(divisor, context).floor(), context), context);
+	}
+	
+	public Decimal mod(Decimal divisor) {
+		return mod(divisor, DEFAULT_CONTEXT);
+	}
+	
+	public Decimal pow(Decimal exponent, MathContext context) {
+		return Exponentiation.exponentiation(this, exponent, context);
+	}
+	
+	public Decimal root(Decimal degree, MathContext context) {
+		return RootExtraction.rootExtraction(this, degree, context);
+	}
+	
+	public Decimal sqrt(MathContext context) {
+		return root(TWO, context);
 	}
 
 }

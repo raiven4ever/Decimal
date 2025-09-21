@@ -5,9 +5,49 @@ import static decimal.Decimal.ZERO;
 import static decimal.operations.elementaryExtensions.Exponentiation.*;
 
 import java.math.MathContext;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import decimal.Decimal;
 
+/**
+ * Utility class for extracting roots of {@link decimal.Decimal} values.
+ * <p>
+ * The {@code RootExtraction} class provides algorithms for computing n-th roots
+ * under arbitrary precision. It supports both integer and real-valued degrees,
+ * with separate internal implementations chosen depending on whether the
+ * degree is an integer.
+ * </p>
+ *
+ * <h2>Usage</h2>
+ * <ul>
+ *   <li>For integer degrees, an iterative method based on Halley’s method is used
+ *       to provide stable convergence.</li>
+ *   <li>For non-integer degrees, the root is computed using the definition
+ *       {@code a^(1/n)} via exponentiation.</li>
+ *   <li>Special cases such as zero radicands, negative radicands with odd
+ *       integer degrees, and negative degrees are handled explicitly.</li>
+ * </ul>
+ *
+ * <h2>Domain Restrictions</h2>
+ * <ul>
+ *   <li>Even roots of negative numbers are undefined.</li>
+ *   <li>Zero raised to a nonpositive degree is undefined.</li>
+ *   <li>Non-integer degrees of negative radicands are undefined.</li>
+ * </ul>
+ *
+ * <p>
+ * This class is a non-instantiable static utility holder; all functionality is
+ * provided through static methods. Attempts to instantiate it will result in an
+ * {@link AssertionError}.
+ * </p>
+ *
+ * @see decimal.Decimal
+ * @see decimal.operations.elementaryExtensions.Exponentiation
+ */
 public class RootExtraction {
 	
     /**
@@ -25,21 +65,44 @@ public class RootExtraction {
 		throw new AssertionError("No instances for you!");
 	}
 	
-    /**
-     * Internal helper for computing integer-degree roots using Halley’s method.
-     * <p>
-     * This method is not part of the public API and is intended solely for use
-     * within the root extraction routines of this class. It applies Halley’s
-     * iterative method to approximate the n-th root of a given {@code radicand}
-     * with quadratic convergence under the provided {@link MathContext}.
-     * </p>
-     *
-     * @param radicand the value whose root is being extracted
-     * @param degree   the integer degree of the root
-     * @param context  the {@link MathContext} specifying precision and rounding
-     * @return the computed root approximation
-     */
+	/**
+	 * Computes the n-th root of a given radicand using iterative root-extraction.
+	 * <p>
+	 * By default this delegates to {@link #newtonRaphsonMethod(Decimal, Decimal, MathContext)},
+	 * which converges more slowly than Halley’s method but is far more numerically stable
+	 * across a wide range of precisions (including MathContexts with precision >= 10,000).
+	 * </p>
+	 *
+	 * @param radicand the value whose root is being extracted (must be non-negative
+	 *                 when degree is even)
+	 * @param degree   the index of the root (e.g. 2 for square root, 3 for cube root).
+	 *                 Must be strictly positive and non-zero.
+	 * @param context  the {@link MathContext} specifying precision and rounding
+	 * @return the computed n-th root of {@code radicand} with the requested precision
+	 * @throws ArithmeticException if {@code degree} is zero, or if division by zero occurs
+	 */
 	private static Decimal integerRootExtraction(Decimal radicand, Decimal degree, MathContext context) {
+//		return halleysMethod(radicand, degree, context);
+		return newtonRaphsonMethod(radicand, degree, context);
+	}
+	
+	/**
+	 * Computes the n-th root of a radicand using Halley’s method.
+	 * <p>
+	 * Halley’s method converges faster than Newton–Raphson in theory,
+	 * but in practice it suffers from loss of accuracy at high precision.
+	 * For example, with {@code new MathContext(50)}, computing sqrt(2) yields
+	 * a result that, when squared, produces
+	 * {@code 1.9999999999999999999999999999999999389949244821495} instead of 2.
+	 * This makes it unsuitable for contexts requiring precision >= 37 digits.
+	 * </p>
+	 *
+	 * @param radicand the value whose root is being extracted
+	 * @param degree   the index of the root (positive)
+	 * @param context  the {@link MathContext} specifying precision and rounding
+	 * @return the computed n-th root of {@code radicand}, may be inaccurate for high precision
+	 */	
+	private static Decimal halleysMethod(Decimal radicand, Decimal degree, MathContext context) {
 		Decimal subtract = degree.subtract(ONE);
 		Decimal add = degree.add(ONE);
 		
@@ -50,6 +113,38 @@ public class RootExtraction {
 			Decimal fraction = numerator.divide(denominator, context);
 			Decimal guess = result.multiply(fraction, context);
 			
+			if (guess.equals(result)) break;
+			result = guess;
+		}
+		return result;
+	}
+	
+	/**
+	 * Computes the n-th root of a radicand using the Newton–Raphson method.
+	 * <p>
+	 * This method converges more slowly than Halley’s method, but it is significantly
+	 * more robust at arbitrary precision. It remains stable even at extreme contexts
+	 * (e.g. precision = 10,000 digits).
+	 * <br><br>
+	 * Example: Computing sqrt(2) with {@code new MathContext(100)} produces:
+	 * <pre>
+	 * root:     1.414213562373095048801688724209698078569671875376948073176679737990732478462107038850387534327641573
+	 * squared:  2.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+	 * </pre>
+	 * </p>
+	 *
+	 * @param radicand the value whose root is being extracted
+	 * @param degree   the index of the root (positive)
+	 * @param context  the {@link MathContext} specifying precision and rounding
+	 * @return the computed n-th root of {@code radicand}, stable across very high precision
+	 */
+	private static Decimal newtonRaphsonMethod(Decimal radicand, Decimal degree, MathContext context) {
+		Decimal subtract = degree.subtract(ONE);
+		Decimal reciprocal = ONE.divide(degree, context);
+		
+		Decimal result = ONE;
+		while (true) {
+			Decimal guess = reciprocal.multiply(subtract.multiply(result, context).add(radicand.divide(exponentiation(result, subtract, context), context), context), context);
 			if (guess.equals(result)) break;
 			result = guess;
 		}
