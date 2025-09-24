@@ -1184,58 +1184,58 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public int bitCount() {
 		return Decimals.requireInteger(this).toBigInteger().bitCount();
 	}
-	
-    /**
-     * Computes the remainder of this value divided by the given {@code divisor},
-     * using floor division.
-     *
-     * @param divisor the divisor
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the remainder after division
-     */
+
+	/**
+	 * Computes the remainder of this value divided by the given {@code divisor},
+	 * using floor division.
+	 *
+	 * @param divisor the divisor
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the remainder after division
+	 */
 	public Decimal mod(Decimal divisor, MathContext context) {
 		return subtract(divisor.multiply(divide(divisor, context).floor(), context), context);
 	}
-	
+
 	/**
-     * Computes the remainder of this value divided by the given {@code divisor},
-     * using the default math context.
-     *
-     * @param divisor the divisor
-     * @return the remainder after division
-     */
+	 * Computes the remainder of this value divided by the given {@code divisor},
+	 * using the default math context.
+	 *
+	 * @param divisor the divisor
+	 * @return the remainder after division
+	 */
 	public Decimal mod(Decimal divisor) {
 		return mod(divisor, DEFAULT_CONTEXT);
 	}
-	
+
 	/**
-     * Raises this value to the power of the given {@code exponent}.
-     *
-     * @param exponent the exponent
-     * @param context  the {@link MathContext} specifying precision and rounding
-     * @return the result of {@code this^exponent}
-     */
+	 * Raises this value to the power of the given {@code exponent}.
+	 *
+	 * @param exponent the exponent
+	 * @param context  the {@link MathContext} specifying precision and rounding
+	 * @return the result of {@code this^exponent}
+	 */
 	public Decimal pow(Decimal exponent, MathContext context) {
 		return Exponentiation.exponentiation(this, exponent, context);
 	}
-	
+
 	/**
-     * Extracts the n-th root of this value.
-     *
-     * @param degree  the degree of the root
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the result of {@code this^(1/degree)}
-     */
+	 * Extracts the n-th root of this value.
+	 *
+	 * @param degree  the degree of the root
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the result of {@code this^(1/degree)}
+	 */
 	public Decimal root(Decimal degree, MathContext context) {
 		return RootExtraction.rootExtraction(this, degree, context);
 	}
-	
+
 	/**
-     * Computes the square root of this value.
-     *
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the square root of this value
-     */
+	 * Computes the square root of this value.
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the square root of this value
+	 */
 	public Decimal sqrt(MathContext context) {
 		return root(TWO, context);
 	}

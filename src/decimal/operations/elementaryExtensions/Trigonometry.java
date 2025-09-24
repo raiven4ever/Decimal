@@ -12,6 +12,8 @@ import decimal.helpers.Summation;
 
 public class Trigonometry {
 	
+	private static final Decimal THREE = D("3");
+
 	private Trigonometry() {
 		// TODO Auto-generated constructor stub
 		throw new AssertionError("No instances for you!");
@@ -26,7 +28,7 @@ public class Trigonometry {
 		static class Chudovsky { //fast but imprecise
 			private static final Decimal D6 = D("10005");
 			private static final Decimal D5 = D("640320");
-			private static final Decimal D4 = D("3");
+			private static final Decimal D4 = THREE;
 			private static final Decimal D3 = D("545140134");
 			private static final Decimal D2 = D("13591409");
 			private static final Decimal D = D("4270934400");
@@ -72,19 +74,14 @@ public class Trigonometry {
 		
 	}
 	
-	public static Decimal pi(MathContext context) {
-		return Pi.BBP.pi(context);
-	}
-	
 	static class Sin {
 		
 		private static Decimal maclaurin(Decimal angle, MathContext context) {
-			Decimal reduced = angle.mod(TWO.multiply(pi(context), context), context);
 			FactorialSupplier factorialSupplier = new FactorialSupplier(1);
 			Summation summation = new Summation(n -> {
 				Decimal numerator = ONE.negate().pow(n, context);
 				Decimal denominator = factorialSupplier.nextPre(2);
-				Decimal multiplier = reduced.pow(TWO.multiply(n, context).add(ONE, context), context);
+				Decimal multiplier = angle.pow(TWO.multiply(n, context).add(ONE, context), context);
 				Decimal result = multiplier.multiply(numerator, context).divide(denominator, context);
 				return result;
 			});
@@ -92,15 +89,67 @@ public class Trigonometry {
 		}
 	}
 	
-	public static Decimal sin(Decimal angle, MathContext context) {
-		return null;
+	static class Cos {
+		
+		private static Decimal maclaurin(Decimal angle, MathContext context) {
+			FactorialSupplier factorialSupplier = new FactorialSupplier(0);
+			Summation summation = new Summation(n -> {
+				Decimal numerator = ONE.negate().pow(n, context);
+				Decimal denominator = factorialSupplier.nextPre(2);
+				Decimal multiplier = angle.pow(TWO.multiply(n, context), context);
+				Decimal result = multiplier.multiply(numerator, context).divide(denominator, context);
+				return result;
+			});
+			return summation.sumInfinite(0, context);
+		}
 		
 	}
 	
+	public static Decimal pi(MathContext context) {
+		return Pi.BBP.pi(context);
+	}
+
+	public static Decimal rangeReduce(Decimal angle, MathContext context) {
+		return angle.mod(TWO.multiply(pi(context), context), context);
+	}
+	
+	public static enum Quadrant {
+		I,
+		II,
+		III,
+		IV
+	}
+	
+	public static Quadrant quadrant(Decimal angle, MathContext context) {
+		Decimal pi = pi(context);
+		Decimal end = pi.divide(TWO, context);
+		Decimal end2 = THREE.divide(TWO, context).multiply(pi, context);
+		if (angle.inInterval(ZERO, end, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
+			return Quadrant.I;
+		else if (angle.inInterval(end, pi, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
+			return Quadrant.II;
+		else if (angle.inInterval(pi, end2, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
+			return Quadrant.III;
+		else if (angle.inInterval(end2, TWO.multiply(pi, context), BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
+			return Quadrant.IV;
+		throw new ArithmeticException("??? all angles should be covered. ");
+	}
+
+	public static Decimal sin(Decimal angle, MathContext context) {
+		Decimal pi = pi(context);
+		return switch (quadrant(angle, context)) {
+		case I -> 		Sin.maclaurin(angle, context);
+		case II -> 		Cos.maclaurin(pi.subtract(angle, context), context);
+		case III -> 	Sin.maclaurin(angle.subtract(pi, context), context).negate();
+		case IV -> 		Cos.maclaurin(TWO.multiply(pi, context).subtract(angle, context), context).negate();
+		};
+		
+	}
+
 	public static void main(String[] args) {
 		MathContext context = new MathContext(100);
 		Decimal pi = Pi.BBP.pi(context);
-		System.out.println(Sin.maclaurin(pi.add(D("12334"), context), context));
+		System.out.println(sin(pi.divide(TWO, context), context));
 	}
 
 }
