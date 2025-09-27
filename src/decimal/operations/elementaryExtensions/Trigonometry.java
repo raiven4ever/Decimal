@@ -124,16 +124,32 @@ public class Trigonometry {
 		else
 			return Cos.maclaurin(angle, context).negate();
 	}
+	
+	public static Decimal cos(Decimal angle, MathContext context) {
+		Decimal pi = pi(context);
+		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
+		angle = angle.subtract(n.multiply(pi, context).multiply(HALF, context), context);
+
+		n = n.and(THREE);
+		if (n.equals(ZERO))
+			return Cos.maclaurin(angle, context);
+		else if (n.equals(ONE))
+			return Sin.maclaurin(angle, context).negate();
+		else if (n.equals(TWO))
+			return Cos.maclaurin(angle, context).negate();
+		else
+			return Sin.maclaurin(angle, context);
+	}
 
 	public static void main(String[] args) {
 		MathContext context = new MathContext(100);
 		Decimal pi = pi(context);
-//		for (double i = -Math.PI*2; i <= Math.PI*2; i+= 0.05) {
-//			Decimal object = sin(D(Double.toString(i)), context);
-////			Object object = quadrant(D(Double.toString(i)), pi, context);
-//			System.out.println(String.format("%s\t%s", Math.round(i*1000)/1000d, object));
-//		}
-		System.out.println(sin(pi.multiply(HALF, context), context));
+		for (double i = -Math.PI*2; i <= Math.PI*2; i+= 0.05) {
+			Decimal angle = D(Double.toString(i));
+			Decimal object = cos(angle, context);
+			System.out.println(String.format("%s\t%s", Math.round(i*1000)/1000d, object));
+		}
+		
 	}
 
 }
