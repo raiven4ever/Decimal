@@ -109,47 +109,33 @@ public class Trigonometry {
 		return Pi.BBP.pi(context);
 	}
 
-	public static Decimal rangeReduce(Decimal angle, MathContext context) {
-		return angle.mod(TWO.multiply(pi(context), context), context);
-	}
-	
-	public static enum Quadrant {
-		I,
-		II,
-		III,
-		IV
-	}
-	
-	public static Quadrant quadrant(Decimal angle, MathContext context) {
-		Decimal pi = pi(context);
-		Decimal end = pi.divide(TWO, context);
-		Decimal end2 = THREE.divide(TWO, context).multiply(pi, context);
-		if (angle.inInterval(ZERO, end, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
-			return Quadrant.I;
-		else if (angle.inInterval(end, pi, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
-			return Quadrant.II;
-		else if (angle.inInterval(pi, end2, BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
-			return Quadrant.III;
-		else if (angle.inInterval(end2, TWO.multiply(pi, context), BoundType.INCLUSIVE, BoundType.EXCLUSIVE))
-			return Quadrant.IV;
-		throw new ArithmeticException("??? all angles should be covered. ");
-	}
-
 	public static Decimal sin(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
-		return switch (quadrant(angle, context)) {
-		case I -> 		Sin.maclaurin(angle, context);
-		case II -> 		Cos.maclaurin(pi.subtract(angle, context), context);
-		case III -> 	Sin.maclaurin(angle.subtract(pi, context), context).negate();
-		case IV -> 		Cos.maclaurin(TWO.multiply(pi, context).subtract(angle, context), context).negate();
-		};
+		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
+		angle = angle.subtract(n.multiply(pi, context).multiply(HALF, context), context);
 		
+		n = n.and(THREE);
+		if (n.equals(ZERO))
+			return Sin.maclaurin(angle, context);
+		else if (n.equals(ONE))
+			return Cos.maclaurin(angle, context);
+		else if (n.equals(TWO))
+			return Sin.maclaurin(angle, context).negate();
+		else if (n.equals(THREE))
+			return Cos.maclaurin(angle, context).negate();
+		else
+			throw new ArithmeticException(String.format("Undefined behavior for angle %s", angle));
 	}
 
 	public static void main(String[] args) {
 		MathContext context = new MathContext(100);
-		Decimal pi = Pi.BBP.pi(context);
-		System.out.println(sin(pi.divide(TWO, context), context));
+		Decimal pi = pi(context);
+//		for (double i = -Math.PI*2; i <= Math.PI*2; i+= 0.05) {
+//			Decimal object = sin(D(Double.toString(i)), context);
+////			Object object = quadrant(D(Double.toString(i)), pi, context);
+//			System.out.println(String.format("%s\t%s", Math.round(i*1000)/1000d, object));
+//		}
+		System.out.println(sin(pi.multiply(HALF, context), context));
 	}
 
 }
