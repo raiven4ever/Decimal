@@ -289,7 +289,7 @@ public class Exponentiation {
 	 */
 	public static Decimal exponentiation(Decimal base, Decimal exponent, MathContext context) {
 		if (exponent.isInteger()) {
-			if (exponent.equals(ZERO) && base.notEqual(ZERO))
+			if (exponent.equals(ZERO) && base.equals(ZERO))
 				return ONE;
 			else if (exponent.greaterThan(ZERO))
 				return integerExponentiation(base, exponent, context);
