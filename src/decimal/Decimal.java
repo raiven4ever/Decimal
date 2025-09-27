@@ -1218,6 +1218,19 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal pow(Decimal exponent, MathContext context) {
 		return Exponentiation.exponentiation(this, exponent, context);
 	}
+	
+    /**
+     * Computes the square of this value.
+     *
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the result of {@code this^2}
+     */
+	public Decimal squared(MathContext context) {
+		if (isInteger())
+			return shiftLeft(1);
+		else
+			return pow(TWO, context);
+	}
 
 	/**
 	 * Extracts the n-th root of this value.
