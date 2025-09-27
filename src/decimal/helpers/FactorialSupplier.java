@@ -20,7 +20,7 @@ import decimal.Decimal;
  *       successive factorial terms.</li>
  * </ul>
  */
-public class FactorialSupplier {
+public class FactorialSupplier implements NumberSupplier {
 
 	/**
 	 * The current factorial value.
@@ -33,7 +33,8 @@ public class FactorialSupplier {
 	 *
 	 * @return the current factorial
 	 */
-	public Decimal currentFactorial() {
+	@Override
+	public Decimal currentValue() {
 		return value;
 	}
 
@@ -47,6 +48,7 @@ public class FactorialSupplier {
 	 *
 	 * @return the current value of {@code n}
 	 */
+	@Override
 	public Decimal currentN() {
 		return n;
 	}
@@ -151,6 +153,7 @@ public class FactorialSupplier {
 	 *
 	 * @return the current factorial before advancing
 	 */
+	@Override
 	public Decimal nextPre() {
 		Decimal toReturn = value;
 		factorialIncrement();
@@ -163,6 +166,7 @@ public class FactorialSupplier {
 	 * @param steps the number of factorial steps to advance
 	 * @return the current factorial before advancing
 	 */
+	@Override
 	public Decimal nextPre(int steps) {
 		Decimal toReturn = value;
 		for (int i = 0; i < steps; i++) {
@@ -178,6 +182,7 @@ public class FactorialSupplier {
 	 *
 	 * @return the next factorial value
 	 */
+	@Override
 	public Decimal nextPost() {
 		factorialIncrement();
 		return value;
@@ -189,6 +194,7 @@ public class FactorialSupplier {
 	 * @param steps the number of factorial steps to advance
 	 * @return the factorial after advancing
 	 */
+	@Override
 	public Decimal nextPost(int steps) {
 		for (int i = 0; i < steps; i++) {
 			factorialIncrement();
