@@ -252,39 +252,39 @@ public class Exponentiation {
 	/**
 	 * Computes {@code base} raised to the power of {@code exponent} with the given {@link MathContext}.
 	 * <p>
-	 * This method supports both integer and non-integer exponents:
+	 * Behavior depends on whether {@code exponent} is an integer:
 	 * <ul>
-	 *   <li>If {@code exponent} is an integer:
+	 *   <li><b>Integer exponents</b>:
 	 *     <ul>
-	 *       <li>{@code exponent == 0} returns {@code ONE}.</li>
-	 *       <li>{@code exponent > 0} delegates to {@code integerExponentiation(base, exponent, context)}.</li>
-	 *       <li>{@code exponent < 0} computes the reciprocal of the corresponding positive power.</li>
+	 *       <li>{@code exponent > 0} → computed by {@code integerExponentiation(base, exponent, context)}.</li>
+	 *       <li>{@code exponent < 0} → reciprocal of the corresponding positive power.</li>
+	 *       <li>{@code exponent == 0} → handled directly by {@code integerExponentiation}, including the
+	 *           case {@code 0^0}, which is defined there to return {@code ONE}.</li>
 	 *     </ul>
 	 *   </li>
-	 *   <li>If {@code exponent} is non-integer:
+	 *   <li><b>Non-integer exponents</b>:
 	 *     <ul>
-	 *       <li>The result is defined as {@code exp(exponent * ln(base))} and is evaluated with the
-	 *           provided precision.</li>
+	 *       <li>Evaluated as {@code exp(exponent * ln(base))}, using the given precision.</li>
 	 *     </ul>
 	 *   </li>
 	 * </ul>
 	 * <p>
-	 * No explicit guardrails are applied for special cases such as {@code base <= 0} with non-integer
-	 * exponents or division by zero. If such conditions arise, they will fail naturally in the
-	 * underlying operations ({@code ln}, {@code divide}, etc.), rather than being intercepted here.
+	 * This method does not enforce guardrails for edge cases such as negative bases with fractional
+	 * exponents or division by zero. Such conditions are allowed to fail naturally in the underlying
+	 * operations ({@code ln}, {@code divide}, etc.), ensuring that responsibility for correctness is
+	 * localized to the primitive operations.
 	 *
 	 * @param base     the value to raise
 	 * @param exponent the power to raise {@code base} to
-	 * @param context  the {@link MathContext} used for intermediate and final precision
-	 * @return {@code base} raised to {@code exponent}, computed with the given precision
+	 * @param context  the {@link MathContext} for precision
+	 * @return {@code base} raised to {@code exponent}, evaluated with the given precision
 	 */
 	public static Decimal exponentiation(Decimal base, Decimal exponent, MathContext context) {
-	    if (exponent.isInteger()) {
-	        if (exponent.equals(ZERO)) return ONE;
-	        if (exponent.greaterThan(ZERO)) return integerExponentiation(base, exponent, context);
-	        return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
-	    }
-	    return exp(exponent.multiply(ln(base, context), context), context);
+		if (exponent.isInteger()) {
+			if (exponent.greaterThan(ZERO)) return integerExponentiation(base, exponent, context);
+			return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
+		}
+		return exp(exponent.multiply(ln(base, context), context), context);
 	}
 
 }
