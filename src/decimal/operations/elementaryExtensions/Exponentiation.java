@@ -250,54 +250,41 @@ public class Exponentiation {
 	}
 
 	/**
-	 * Computes the general exponentiation {@code base^exponent} for {@link Decimal} values.
+	 * Computes {@code base} raised to the power of {@code exponent} with the given {@link MathContext}.
 	 * <p>
-	 * This is the only publicly exposed entry point for exponentiation and includes
-	 * all guardrails for handling special cases:
+	 * This method supports both integer and non-integer exponents:
 	 * <ul>
-	 *   <li><b>Integer exponents:</b>
+	 *   <li>If {@code exponent} is an integer:
 	 *     <ul>
-	 *       <li>{@code base^0 = 1} for all nonzero bases</li>
-	 *       <li>Positive exponents are computed via {@link #integerExponentiation(Decimal, Decimal, MathContext)}</li>
-	 *       <li>Negative exponents are computed as the reciprocal of the positive power,
-	 *           throwing an exception if {@code base = 0}</li>
+	 *       <li>{@code exponent == 0} returns {@code ONE}.</li>
+	 *       <li>{@code exponent > 0} delegates to {@code integerExponentiation(base, exponent, context)}.</li>
+	 *       <li>{@code exponent < 0} computes the reciprocal of the corresponding positive power.</li>
 	 *     </ul>
 	 *   </li>
-	 *   <li><b>Real exponents:</b>
+	 *   <li>If {@code exponent} is non-integer:
 	 *     <ul>
-	 *       <li>Only defined for positive bases</li>
-	 *       <li>Computed using the identity {@code a^b = exp(b * ln(a))}, where
-	 *           {@link #exp(Decimal, MathContext)} and {@link #ln(Decimal, MathContext)} are used</li>
+	 *       <li>The result is defined as {@code exp(exponent * ln(base))} and is evaluated with the
+	 *           provided precision.</li>
 	 *     </ul>
-	 *   </li>
-	 *   <li><b>Undefined cases:</b>
-	 *     <ul>
-	 *       <li>{@code 0^0}</li>
-	 *       <li>{@code 0^negative}</li>
-	 *       <li>{@code negative^non-integer}</li>
-	 *     </ul>
-	 *     result in an {@link IllegalArgumentException}
 	 *   </li>
 	 * </ul>
-	 * </p>
+	 * <p>
+	 * No explicit guardrails are applied for special cases such as {@code base <= 0} with non-integer
+	 * exponents or division by zero. If such conditions arise, they will fail naturally in the
+	 * underlying operations ({@code ln}, {@code divide}, etc.), rather than being intercepted here.
 	 *
-	 * @param base the {@link Decimal} base
-	 * @param exponent the {@link Decimal} exponent
-	 * @param context the {@link MathContext} specifying precision and rounding
-	 * @return the result of raising {@code base} to the power of {@code exponent}
-	 * @throws IllegalArgumentException if the operation is mathematically undefined
+	 * @param base     the value to raise
+	 * @param exponent the power to raise {@code base} to
+	 * @param context  the {@link MathContext} used for intermediate and final precision
+	 * @return {@code base} raised to {@code exponent}, computed with the given precision
 	 */
 	public static Decimal exponentiation(Decimal base, Decimal exponent, MathContext context) {
-		if (exponent.isInteger()) {
-			if (exponent.equals(ZERO) && base.equals(ZERO))
-				return ONE;
-			else if (exponent.greaterThan(ZERO))
-				return integerExponentiation(base, exponent, context);
-			else if (exponent.lessThan(ZERO) && base.notEqual(ZERO))
-				ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
-		} else if (base.greaterThan(ZERO))
-			return exp(exponent.multiply(ln(base, context)), context);
-		throw new IllegalArgumentException(String.format("undefined for base %s, exponent %s", base, exponent));
+	    if (exponent.isInteger()) {
+	        if (exponent.equals(ZERO)) return ONE;
+	        if (exponent.greaterThan(ZERO)) return integerExponentiation(base, exponent, context);
+	        return ONE.divide(integerExponentiation(base, exponent.negate(), context), context);
+	    }
+	    return exp(exponent.multiply(ln(base, context), context), context);
 	}
 
 }
