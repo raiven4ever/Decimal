@@ -335,6 +335,17 @@ public class Trigonometry {
 			return Cos.maclaurin(angle, context).negate();
 	}
 
+    /**
+     * Computes the cosine of the given angle.
+     *
+     * <p>The input is range-reduced using multiples of π/2, and the
+     * appropriate cosine or sine Maclaurin expansion is applied
+     * depending on the quadrant.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the cosine of {@code angle} with the given precision
+     */
 	public static Decimal cos(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
 		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
