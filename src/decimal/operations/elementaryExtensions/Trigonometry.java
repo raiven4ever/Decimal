@@ -12,14 +12,65 @@ import decimal.helpers.FactorialSupplier;
 import decimal.helpers.NewtonRaphsonProvider;
 import decimal.helpers.Summation;
 
+/**
+ * Utility class providing trigonometric functions for {@link decimal.Decimal}.
+ *
+ * <p>This class implements a wide range of trigonometric and inverse
+ * trigonometric functions (e.g., {@code sin}, {@code cos}, {@code tan},
+ * {@code arcsin}, {@code arccos}, {@code arctan}, etc.) under arbitrary
+ * precision, controlled by a {@link java.math.MathContext}.</p>
+ *
+ * <p>Constants such as {@code π} are computed internally using series
+ * expansions (e.g., BBP and Chudnovsky formulas), and functions are
+ * evaluated through Maclaurin expansions combined with range-reduction
+ * techniques for stability.</p>
+ *
+ * <h2>Design Notes</h2>
+ * <ul>
+ *   <li>All methods are {@code static}; this class cannot be instantiated.</li>
+ *   <li>Range reduction is applied to angles so that series approximations
+ *       converge quickly.</li>
+ *   <li>Both primary (sin, cos, tan) and reciprocal (csc, sec, cot)
+ *       functions are included.</li>
+ *   <li>Inverse trigonometric functions use iterative solvers and
+ *       series-based identities to ensure precision.</li>
+ * </ul>
+ *
+ * @see decimal.Decimal
+ * @see java.math.MathContext
+ */
 public class Trigonometry {
 
+	/**
+	 * Constant representing the value {@code 3}.
+	 */
 	private static final Decimal THREE = D(3);
 
+	/**
+	 * Private constructor to prevent instantiation of this utility class.
+	 *
+	 * @throws AssertionError always, since instantiation is not allowed
+	 */
 	private Trigonometry() {
 		throw new AssertionError("No instances for you!");
 	}
 
+	/**
+	 * Creates a {@link Decimal} from the given value.
+	 *
+	 * <p>Accepted types include:
+	 * <ul>
+	 *   <li>{@link String}</li>
+	 *   <li>{@link Long}</li>
+	 *   <li>{@link Integer}</li>
+	 *   <li>{@link Double}</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * @param value the value to convert
+	 * @return a {@code Decimal} representing {@code value}
+	 * @throws IllegalArgumentException if the type of {@code value} is not supported
+	 */
 	static Decimal D(Object value) {
 		return switch(value) {
 		case String string -> new Decimal(string);
@@ -30,8 +81,24 @@ public class Trigonometry {
 		};
 	}
 
+    /**
+     * Provides algorithms for computing the constant π with arbitrary precision.
+     *
+     * <p>Two different approaches are included:
+     * <ul>
+     *   <li>{@link Chudovsky} — fast but less precise.</li>
+     *   <li>{@link BBP} — slower but extremely precise.</li>
+     * </ul>
+     * </p>
+     */
 	private static class Pi {
-		
+
+        /**
+         * Computes π using the Chudnovsky formula.
+         *
+         * <p>This method converges quickly and is efficient,
+         * but the results may be less accurate at higher precisions.</p>
+         */
 		static class Chudovsky { //fast but imprecise
 			private static final Decimal D6 = D(10005);
 			private static final Decimal D5 = D(640320);
@@ -57,6 +124,13 @@ public class Trigonometry {
 			}
 		}
 
+        /**
+         * Computes π using the Bailey–Borwein–Plouffe (BBP) formula.
+         *
+         * <p>This method converges more slowly but provides
+         * very high precision, making it suitable for contexts
+         * where accuracy is more important than speed.</p>
+         */
 		static class BBP { //slower but insanely precise
 
 			private static final Decimal D5 = D(6);
@@ -111,7 +185,7 @@ public class Trigonometry {
 		}
 
 	}
-	
+
 	public static Decimal pi(MathContext context) {
 		return Pi.BBP.pi(context);
 	}
@@ -131,7 +205,7 @@ public class Trigonometry {
 		else
 			return Cos.maclaurin(angle, context).negate();
 	}
-	
+
 	public static Decimal cos(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
 		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
@@ -147,11 +221,11 @@ public class Trigonometry {
 		else
 			return Sin.maclaurin(angle, context);
 	}
-	
+
 	public static Decimal tan(Decimal angle, MathContext context) {
 		return sin(angle, context).divide(cos(angle, context), context);
 	}
-	
+
 	public static Decimal csc(Decimal angle, MathContext context) {
 		return ONE.divide(sin(angle, context), context);
 	}
@@ -163,60 +237,60 @@ public class Trigonometry {
 	public static Decimal cot(Decimal angle, MathContext context) {
 		return cos(angle, context).divide(sin(angle, context), context);
 	}
-	
+
 	public static Decimal arcsin(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
-				new NewtonRaphsonProvider(
-					y -> sin(y, context).subtract(x, context), 
-					y -> cos(y, context)
-				);
+					new NewtonRaphsonProvider(
+							y -> sin(y, context).subtract(x, context), 
+							y -> cos(y, context)
+							);
 			return provider.solve(ZERO, context);
 		}
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
-	
+
 	public static Decimal arccos(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
-				new NewtonRaphsonProvider(
-					y -> cos(y, context).subtract(x, context), 
-					y -> sin(y, context).negate()
-				);
+					new NewtonRaphsonProvider(
+							y -> cos(y, context).subtract(x, context), 
+							y -> sin(y, context).negate()
+							);
 			return provider.solve(ONE, context);
 		}
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
-	
+
 	public static Decimal arctan(Decimal x, MathContext context) {
 		Decimal pi = pi(context);
 		if (x.abs().greaterThan(ONE))
 			return pi.multiply(HALF, context).multiply(D(x.signum()), context).subtract(arctan(x.reciprocal(context), context), context);
-		
+
 		Decimal max = pi.multiply(HALF, context);
 		Decimal min = max.negate();
 		NewtonRaphsonProvider provider = 
-			new NewtonRaphsonProvider(
-				y -> tan(y, context).subtract(x, context),
-				y -> sec(y, context).squared(context),
-				y -> y.subtract(pi.multiply(y.divide(pi, context).round(), context), context),
-				min,
-				max
-			);
+				new NewtonRaphsonProvider(
+						y -> tan(y, context).subtract(x, context),
+						y -> sec(y, context).squared(context),
+						y -> y.subtract(pi.multiply(y.divide(pi, context).round(), context), context),
+						min,
+						max
+						);
 		Decimal solve = provider.solve(ZERO, context);
 		return solve;
 	}
-	
+
 	public static Decimal arccsc(Decimal x, MathContext context) {
 		return arcsin(x.reciprocal(context), context);
 	}
-	
+
 	public static Decimal arcsec(Decimal x, MathContext context) {
 		return arccos(x.reciprocal(context), context);
 	}
-	
+
 	public static Decimal arccot(Decimal x, MathContext context) {
 		return x.isPositive() ? arctan(x.reciprocal(context), context) : arctan(x.reciprocal(context), context).add(pi(context), context);
 	}
-	
+
 }
