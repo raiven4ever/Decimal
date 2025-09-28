@@ -223,28 +223,28 @@ public class Trigonometry {
 		}
 
 	}
-	
-    /**
-     * Provides implementations of the sine function.
-     *
-     * <p>Methods in this class approximate {@code sin(x)} using
-     * series expansions.</p>
-     */
+
+	/**
+	 * Provides implementations of the sine function.
+	 *
+	 * <p>Methods in this class approximate {@code sin(x)} using
+	 * series expansions.</p>
+	 */
 	private static class Sin {
 
-        /**
-         * Computes {@code sin(angle)} using the Maclaurin series expansion.
-         *
-         * <p>The series is defined as:
-         * <pre>
-         *     sin(x) = Σ [(-1)^n * x^(2n+1)] / (2n+1)!
-         * </pre>
-         * and converges for all real values of {@code x}.</p>
-         *
-         * @param angle   the angle in radians
-         * @param context the {@link MathContext} specifying precision and rounding
-         * @return the sine of {@code angle} with the given precision
-         */
+		/**
+		 * Computes {@code sin(angle)} using the Maclaurin series expansion.
+		 *
+		 * <p>The series is defined as:
+		 * <pre>
+		 *     sin(x) = Σ [(-1)^n * x^(2n+1)] / (2n+1)!
+		 * </pre>
+		 * and converges for all real values of {@code x}.</p>
+		 *
+		 * @param angle   the angle in radians
+		 * @param context the {@link MathContext} specifying precision and rounding
+		 * @return the sine of {@code angle} with the given precision
+		 */
 		private static Decimal maclaurin(Decimal angle, MathContext context) {
 			FactorialSupplier factorialSupplier = new FactorialSupplier(1);
 			Summation summation = new Summation(n -> {
@@ -258,8 +258,27 @@ public class Trigonometry {
 		}
 	}
 
+	/**
+	 * Provides implementations of the cosine function.
+	 *
+	 * <p>Methods in this class approximate {@code cos(x)} using
+	 * series expansions.</p>
+	 */
 	private static class Cos {
 
+		/**
+		 * Computes {@code cos(angle)} using the Maclaurin series expansion.
+		 *
+		 * <p>The series is defined as:
+		 * <pre>
+		 *     cos(x) = Σ [(-1)^n * x^(2n)] / (2n)!
+		 * </pre>
+		 * and converges for all real values of {@code x}.</p>
+		 *
+		 * @param angle   the angle in radians
+		 * @param context the {@link MathContext} specifying precision and rounding
+		 * @return the cosine of {@code angle} with the given precision
+		 */
 		private static Decimal maclaurin(Decimal angle, MathContext context) {
 			FactorialSupplier factorialSupplier = new FactorialSupplier(0);
 			Summation summation = new Summation(n -> {
