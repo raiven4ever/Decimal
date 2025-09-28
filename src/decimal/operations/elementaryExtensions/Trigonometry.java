@@ -508,6 +508,15 @@ public class Trigonometry {
 		return arcsin(x.reciprocal(context), context);
 	}
 
+    /**
+     * Computes the inverse secant (arcsecant) of the given value.
+     *
+     * <p>Defined as {@code arcsec(x) = arccos(1 / x)}.</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code sec(y) = x}
+     */
 	public static Decimal arcsec(Decimal x, MathContext context) {
 		return arccos(x.reciprocal(context), context);
 	}
