@@ -293,32 +293,32 @@ public class Trigonometry {
 
 	}
 
-    /**
-     * Computes the constant π with arbitrary precision.
-     *
-     * <p>Currently uses the Bailey–Borwein–Plouffe (BBP) series by default,
-     * which converges slowly but yields extremely high accuracy. The
-     * Chudnovsky algorithm is available but disabled here.</p>
-     *
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return an approximation of π at the given precision
-     */
+	/**
+	 * Computes the constant π with arbitrary precision.
+	 *
+	 * <p>Currently uses the Bailey–Borwein–Plouffe (BBP) series by default,
+	 * which converges slowly but yields extremely high accuracy. The
+	 * Chudnovsky algorithm is available but disabled here.</p>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return an approximation of π at the given precision
+	 */
 	public static Decimal pi(MathContext context) {
-//		return Pi.Chudovsky.pi(context);
+		//		return Pi.Chudovsky.pi(context);
 		return Pi.BBP.pi(context);
 	}
 
-    /**
-     * Computes the sine of the given angle.
-     *
-     * <p>The input is range-reduced using multiples of π/2, and the
-     * appropriate sine or cosine Maclaurin expansion is applied
-     * depending on the quadrant.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the sine of {@code angle} with the given precision
-     */
+	/**
+	 * Computes the sine of the given angle.
+	 *
+	 * <p>The input is range-reduced using multiples of π/2, and the
+	 * appropriate sine or cosine Maclaurin expansion is applied
+	 * depending on the quadrant.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the sine of {@code angle} with the given precision
+	 */
 	public static Decimal sin(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
 		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
@@ -335,17 +335,17 @@ public class Trigonometry {
 			return Cos.maclaurin(angle, context).negate();
 	}
 
-    /**
-     * Computes the cosine of the given angle.
-     *
-     * <p>The input is range-reduced using multiples of π/2, and the
-     * appropriate cosine or sine Maclaurin expansion is applied
-     * depending on the quadrant.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the cosine of {@code angle} with the given precision
-     */
+	/**
+	 * Computes the cosine of the given angle.
+	 *
+	 * <p>The input is range-reduced using multiples of π/2, and the
+	 * appropriate cosine or sine Maclaurin expansion is applied
+	 * depending on the quadrant.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the cosine of {@code angle} with the given precision
+	 */
 	public static Decimal cos(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
 		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
@@ -362,72 +362,72 @@ public class Trigonometry {
 			return Sin.maclaurin(angle, context);
 	}
 
-    /**
-     * Computes the tangent of the given angle.
-     *
-     * <p>This implementation currently evaluates {@code tan(x)} as
-     * {@code sin(x) / cos(x)}. A dedicated implementation based on
-     * series expansions (e.g., using Bernoulli or Euler up/down numbers)
-     * may replace this in the future.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the tangent of {@code angle} with the given precision
-     */
+	/**
+	 * Computes the tangent of the given angle.
+	 *
+	 * <p>This implementation currently evaluates {@code tan(x)} as
+	 * {@code sin(x) / cos(x)}. A dedicated implementation based on
+	 * series expansions (e.g., using Bernoulli or Euler up/down numbers)
+	 * may replace this in the future.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the tangent of {@code angle} with the given precision
+	 */
 	public static Decimal tan(Decimal angle, MathContext context) {
 		return sin(angle, context).divide(cos(angle, context), context);
 	}
 
-    /**
-     * Computes the cosecant of the given angle.
-     *
-     * <p>Defined as {@code csc(x) = 1 / sin(x)}.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the cosecant of {@code angle} with the given precision
-     */
+	/**
+	 * Computes the cosecant of the given angle.
+	 *
+	 * <p>Defined as {@code csc(x) = 1 / sin(x)}.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the cosecant of {@code angle} with the given precision
+	 */
 	public static Decimal csc(Decimal angle, MathContext context) {
 		return ONE.divide(sin(angle, context), context);
 	}
-	
-    /**
-     * Computes the secant of the given angle.
-     *
-     * <p>Defined as {@code sec(x) = 1 / cos(x)}.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the secant of {@code angle} with the given precision
-     */
+
+	/**
+	 * Computes the secant of the given angle.
+	 *
+	 * <p>Defined as {@code sec(x) = 1 / cos(x)}.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the secant of {@code angle} with the given precision
+	 */
 	public static Decimal sec(Decimal angle, MathContext context) {
 		return ONE.divide(cos(angle, context), context);
 	}
 
-    /**
-     * Computes the cotangent of the given angle.
-     *
-     * <p>Defined as {@code cot(x) = cos(x) / sin(x)}.</p>
-     *
-     * @param angle   the angle in radians
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the cotangent of {@code angle} with the given precision
-     */
+	/**
+	 * Computes the cotangent of the given angle.
+	 *
+	 * <p>Defined as {@code cot(x) = cos(x) / sin(x)}.</p>
+	 *
+	 * @param angle   the angle in radians
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the cotangent of {@code angle} with the given precision
+	 */
 	public static Decimal cot(Decimal angle, MathContext context) {
 		return cos(angle, context).divide(sin(angle, context), context);
 	}
 
-    /**
-     * Computes the inverse sine (arcsine) of the given value.
-     *
-     * <p>Uses the Newton–Raphson method to solve {@code sin(y) = x}.
-     * The input {@code x} must lie within the interval [-1, 1].</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code sin(y) = x}
-     * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
-     */
+	/**
+	 * Computes the inverse sine (arcsine) of the given value.
+	 *
+	 * <p>Uses the Newton–Raphson method to solve {@code sin(y) = x}.
+	 * The input {@code x} must lie within the interval [-1, 1].</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code sin(y) = x}
+	 * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
+	 */
 	public static Decimal arcsin(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
@@ -440,17 +440,17 @@ public class Trigonometry {
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
 
-    /**
-     * Computes the inverse cosine (arccosine) of the given value.
-     *
-     * <p>Uses the Newton–Raphson method to solve {@code cos(y) = x}.
-     * The input {@code x} must lie within the interval [-1, 1].</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code cos(y) = x}
-     * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
-     */
+	/**
+	 * Computes the inverse cosine (arccosine) of the given value.
+	 *
+	 * <p>Uses the Newton–Raphson method to solve {@code cos(y) = x}.
+	 * The input {@code x} must lie within the interval [-1, 1].</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code cos(y) = x}
+	 * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
+	 */
 	public static Decimal arccos(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
@@ -463,19 +463,19 @@ public class Trigonometry {
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
 
-    /**
-     * Computes the inverse tangent (arctangent) of the given value.
-     *
-     * <p>For |x| > 1, the identity
-     * {@code arctan(x) = sign(x) * (π/2) − arctan(1/x)}
-     * is applied to reduce the argument. Otherwise, the
-     * Newton–Raphson method is used to solve {@code tan(y) = x}
-     * within the interval [-π/2, π/2].</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code tan(y) = x}
-     */
+	/**
+	 * Computes the inverse tangent (arctangent) of the given value.
+	 *
+	 * <p>For |x| > 1, the identity
+	 * {@code arctan(x) = sign(x) * (π/2) − arctan(1/x)}
+	 * is applied to reduce the argument. Otherwise, the
+	 * Newton–Raphson method is used to solve {@code tan(y) = x}
+	 * within the interval [-π/2, π/2].</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code tan(y) = x}
+	 */
 	public static Decimal arctan(Decimal x, MathContext context) {
 		Decimal pi = pi(context);
 		if (x.abs().greaterThan(ONE))
@@ -495,43 +495,43 @@ public class Trigonometry {
 		return solve;
 	}
 
-    /**
-     * Computes the inverse cosecant (arccosecant) of the given value.
-     *
-     * <p>Defined as {@code arccsc(x) = arcsin(1 / x)}.</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code csc(y) = x}
-     */
+	/**
+	 * Computes the inverse cosecant (arccosecant) of the given value.
+	 *
+	 * <p>Defined as {@code arccsc(x) = arcsin(1 / x)}.</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code csc(y) = x}
+	 */
 	public static Decimal arccsc(Decimal x, MathContext context) {
 		return arcsin(x.reciprocal(context), context);
 	}
 
-    /**
-     * Computes the inverse secant (arcsecant) of the given value.
-     *
-     * <p>Defined as {@code arcsec(x) = arccos(1 / x)}.</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code sec(y) = x}
-     */
+	/**
+	 * Computes the inverse secant (arcsecant) of the given value.
+	 *
+	 * <p>Defined as {@code arcsec(x) = arccos(1 / x)}.</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code sec(y) = x}
+	 */
 	public static Decimal arcsec(Decimal x, MathContext context) {
 		return arccos(x.reciprocal(context), context);
 	}
 
-    /**
-     * Computes the inverse cotangent (arccotangent) of the given value.
-     *
-     * <p>For positive {@code x}, this is defined as
-     * {@code arccot(x) = arctan(1 / x)}. For negative {@code x}, the
-     * result is adjusted by adding π to ensure the correct branch.</p>
-     *
-     * @param x       the input value
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the angle {@code y} such that {@code cot(y) = x}
-     */
+	/**
+	 * Computes the inverse cotangent (arccotangent) of the given value.
+	 *
+	 * <p>For positive {@code x}, this is defined as
+	 * {@code arccot(x) = arctan(1 / x)}. For negative {@code x}, the
+	 * result is adjusted by adding π to ensure the correct branch.</p>
+	 *
+	 * @param x       the input value
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the angle {@code y} such that {@code cot(y) = x}
+	 */
 	public static Decimal arccot(Decimal x, MathContext context) {
 		return x.isPositive() ? arctan(x.reciprocal(context), context) : arctan(x.reciprocal(context), context).add(pi(context), context);
 	}
