@@ -308,6 +308,17 @@ public class Trigonometry {
 		return Pi.BBP.pi(context);
 	}
 
+    /**
+     * Computes the sine of the given angle.
+     *
+     * <p>The input is range-reduced using multiples of π/2, and the
+     * appropriate sine or cosine Maclaurin expansion is applied
+     * depending on the quadrant.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the sine of {@code angle} with the given precision
+     */
 	public static Decimal sin(Decimal angle, MathContext context) {
 		Decimal pi = pi(context);
 		Decimal n = TWO.multiply(angle, context).divide(pi, context).round();
