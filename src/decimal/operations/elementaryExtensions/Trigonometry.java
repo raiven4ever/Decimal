@@ -291,6 +291,9 @@ public class Trigonometry {
 			return Sin.maclaurin(angle, context);
 	}
 
+	//i have plans on tan having its own computation thing, instead of relying on sin/cos
+	//but this requires implementing a euler up/down numbers generator
+	//i have tested bernoulli numbers before and they're simplier to implement so i will use that
 	public static Decimal tan(Decimal angle, MathContext context) {
 		return sin(angle, context).divide(cos(angle, context), context);
 	}
