@@ -440,6 +440,17 @@ public class Trigonometry {
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
 
+    /**
+     * Computes the inverse cosine (arccosine) of the given value.
+     *
+     * <p>Uses the Newton–Raphson method to solve {@code cos(y) = x}.
+     * The input {@code x} must lie within the interval [-1, 1].</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code cos(y) = x}
+     * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
+     */
 	public static Decimal arccos(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
