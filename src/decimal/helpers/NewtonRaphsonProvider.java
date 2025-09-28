@@ -43,20 +43,6 @@ public class NewtonRaphsonProvider {
 		return clamp(result);
 	}
 
-	public Decimal solve(Decimal start, MathContext context, int limit) {
-		Decimal result = start;
-		Cache cache = new Cache(10, start);
-		while (true) {
-			limit--;
-			if (limit <= 0) break;
-			Decimal guess = result.subtract(f.apply(result).divide(fPrime.apply(result), context), context);
-			if (guess.equals(result) || cache.contains(guess)) break;
-			cache.update(guess);
-			result = guess;
-		}
-		return clamp(result);
-	}
-
 	private Decimal clamp(Decimal value) {
 		return 
 			min != null && max != null && clampingMechanism != null ? clampingMechanism.apply(value) : 
