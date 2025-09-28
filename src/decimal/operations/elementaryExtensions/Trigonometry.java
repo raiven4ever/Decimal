@@ -81,71 +81,71 @@ public class Trigonometry {
 		};
 	}
 
-    /**
-     * Provides algorithms for computing the constant π with arbitrary precision.
-     *
-     * <p>Two different approaches are included:
-     * <ul>
-     *   <li>{@link Chudovsky} — fast but less precise.</li>
-     *   <li>{@link BBP} — slower but extremely precise.</li>
-     * </ul>
-     * </p>
-     */
+	/**
+	 * Provides algorithms for computing the constant π with arbitrary precision.
+	 *
+	 * <p>Two different approaches are included:
+	 * <ul>
+	 *   <li>{@link Chudovsky} — fast but less precise.</li>
+	 *   <li>{@link BBP} — slower but extremely precise.</li>
+	 * </ul>
+	 * </p>
+	 */
 	private static class Pi {
 
-        /**
-         * Computes π using the Chudnovsky formula.
-         *
-         * <p>This method converges quickly and is efficient,
-         * but the results may be less accurate at higher precisions.</p>
-         */
+		/**
+		 * Computes π using the Chudnovsky formula.
+		 *
+		 * <p>This method converges quickly and is efficient,
+		 * but the results may be less accurate at higher precisions.</p>
+		 */
 		static class Chudovsky { //fast but imprecise
-		    /**
-		     * Constant {@code 10005}, used as part of the multiplier in the
-		     * Chudnovsky series for π.
-		     */
-		    private static final Decimal D6 = D(10005);
+			/**
+			 * Constant {@code 10005}, used as part of the multiplier in the
+			 * Chudnovsky series for π.
+			 */
+			private static final Decimal D6 = D(10005);
 
-		    /**
-		     * Constant {@code 640320}, a key parameter in the Chudnovsky formula
-		     * affecting the convergence rate.
-		     */
-		    private static final Decimal D5 = D(640320);
+			/**
+			 * Constant {@code 640320}, a key parameter in the Chudnovsky formula
+			 * affecting the convergence rate.
+			 */
+			private static final Decimal D5 = D(640320);
 
-		    /**
-		     * Constant {@code 3}, representing the exponent applied to factorial
-		     * and polynomial terms in the series.
-		     */
-		    private static final Decimal D4 = THREE;
+			/**
+			 * Constant {@code 3}, representing the exponent applied to factorial
+			 * and polynomial terms in the series.
+			 */
+			private static final Decimal D4 = THREE;
 
-		    /**
-		     * Constant {@code 545140134}, the coefficient applied to the series
-		     * index in the numerator.
-		     */
-		    private static final Decimal D3 = D(545140134);
+			/**
+			 * Constant {@code 545140134}, the coefficient applied to the series
+			 * index in the numerator.
+			 */
+			private static final Decimal D3 = D(545140134);
 
-		    /**
-		     * Constant {@code 13591409}, the base term added to the numerator
-		     * in each series iteration.
-		     */
-		    private static final Decimal D2 = D(13591409);
+			/**
+			 * Constant {@code 13591409}, the base term added to the numerator
+			 * in each series iteration.
+			 */
+			private static final Decimal D2 = D(13591409);
 
-		    /**
-		     * Constant {@code 4270934400}, used in the denominator of the
-		     * multiplier for the Chudnovsky series.
-		     */
-		    private static final Decimal D = D("4270934400");
+			/**
+			 * Constant {@code 4270934400}, used in the denominator of the
+			 * multiplier for the Chudnovsky series.
+			 */
+			private static final Decimal D = D("4270934400");
 
-		    /**
-		     * Computes π using the Chudnovsky series expansion.
-		     *
-		     * <p>This implementation uses factorial-based summation
-		     * and converges rapidly, making it suitable when speed
-		     * is prioritized over ultimate precision.</p>
-		     *
-		     * @param context the {@link MathContext} specifying precision and rounding
-		     * @return an approximation of π at the given precision
-		     */
+			/**
+			 * Computes π using the Chudnovsky series expansion.
+			 *
+			 * <p>This implementation uses factorial-based summation
+			 * and converges rapidly, making it suitable when speed
+			 * is prioritized over ultimate precision.</p>
+			 *
+			 * @param context the {@link MathContext} specifying precision and rounding
+			 * @return an approximation of π at the given precision
+			 */
 			private static Decimal pi(MathContext context) {
 				Decimal multiplier = D6.sqrt(context).divide(D, context);
 
@@ -163,21 +163,51 @@ public class Trigonometry {
 			}
 		}
 
-        /**
-         * Computes π using the Bailey–Borwein–Plouffe (BBP) formula.
-         *
-         * <p>This method converges more slowly but provides
-         * very high precision, making it suitable for contexts
-         * where accuracy is more important than speed.</p>
-         */
+		/**
+		 * Computes π using the Bailey–Borwein–Plouffe (BBP) formula.
+		 *
+		 * <p>This method converges more slowly but provides
+		 * very high precision, making it suitable for contexts
+		 * where accuracy is more important than speed.</p>
+		 */
 		static class BBP { //slower but insanely precise
 
+			/**
+			 * Constant {@code 6}, used in the denominator terms of the BBP series.
+			 */
 			private static final Decimal D5 = D(6);
+
+			/**
+			 * Constant {@code 5}, used in the denominator terms of the BBP series.
+			 */
 			private static final Decimal D4 = D(5);
+
+			/**
+			 * Constant {@code 8}, representing the common factor multiplied with
+			 * the summation index in the BBP formula.
+			 */
 			private static final Decimal D3 = D(8);
+
+			/**
+			 * Constant {@code 4}, used in the denominator terms of the BBP series.
+			 */
 			private static final Decimal D2 = D(4);
+
+			/**
+			 * Constant {@code 16}, the base of the power series in the BBP formula.
+			 */
 			private static final Decimal D = D(16);
 
+			/**
+			 * Computes π using the Bailey–Borwein–Plouffe (BBP) series expansion.
+			 *
+			 * <p>The BBP formula allows direct computation of hexadecimal (base-16)
+			 * digits of π without requiring all preceding digits. This implementation
+			 * is slower than Chudnovsky’s method but provides extremely high precision.</p>
+			 *
+			 * @param context the {@link MathContext} specifying precision and rounding
+			 * @return an approximation of π at the given precision
+			 */
 			private static Decimal pi(MathContext context) {
 				Summation summation = new Summation(k -> {
 					Decimal multiplier = ONE.divide(D.pow(k, context), context);
