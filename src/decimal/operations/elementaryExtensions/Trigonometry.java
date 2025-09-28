@@ -521,6 +521,17 @@ public class Trigonometry {
 		return arccos(x.reciprocal(context), context);
 	}
 
+    /**
+     * Computes the inverse cotangent (arccotangent) of the given value.
+     *
+     * <p>For positive {@code x}, this is defined as
+     * {@code arccot(x) = arctan(1 / x)}. For negative {@code x}, the
+     * result is adjusted by adding π to ensure the correct branch.</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code cot(y) = x}
+     */
 	public static Decimal arccot(Decimal x, MathContext context) {
 		return x.isPositive() ? arctan(x.reciprocal(context), context) : arctan(x.reciprocal(context), context).add(pi(context), context);
 	}
