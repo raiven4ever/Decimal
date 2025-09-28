@@ -101,6 +101,7 @@ public class Trigonometry {
 		 * but the results may be less accurate at higher precisions.</p>
 		 */
 		@SuppressWarnings("unused")
+		@Deprecated
 		private static class Chudovsky {
 			/**
 			 * Constant {@code 10005}, used as part of the multiplier in the
@@ -148,7 +149,7 @@ public class Trigonometry {
 			 * @param context the {@link MathContext} specifying precision and rounding
 			 * @return an approximation of π at the given precision
 			 */
-			@SuppressWarnings("unused")
+			
 			private static Decimal pi(MathContext context) {
 				Decimal multiplier = D6.sqrt(context).divide(D, context);
 
