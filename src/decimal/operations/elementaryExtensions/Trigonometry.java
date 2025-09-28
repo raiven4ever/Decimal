@@ -404,6 +404,15 @@ public class Trigonometry {
 		return ONE.divide(cos(angle, context), context);
 	}
 
+    /**
+     * Computes the cotangent of the given angle.
+     *
+     * <p>Defined as {@code cot(x) = cos(x) / sin(x)}.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the cotangent of {@code angle} with the given precision
+     */
 	public static Decimal cot(Decimal angle, MathContext context) {
 		return cos(angle, context).divide(sin(angle, context), context);
 	}
