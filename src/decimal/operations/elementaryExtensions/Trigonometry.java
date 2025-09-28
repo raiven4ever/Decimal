@@ -390,7 +390,16 @@ public class Trigonometry {
 	public static Decimal csc(Decimal angle, MathContext context) {
 		return ONE.divide(sin(angle, context), context);
 	}
-
+	
+    /**
+     * Computes the secant of the given angle.
+     *
+     * <p>Defined as {@code sec(x) = 1 / cos(x)}.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the secant of {@code angle} with the given precision
+     */
 	public static Decimal sec(Decimal angle, MathContext context) {
 		return ONE.divide(cos(angle, context), context);
 	}
