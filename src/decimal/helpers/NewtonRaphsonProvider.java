@@ -1,10 +1,7 @@
 package decimal.helpers;
 
 import java.math.MathContext;
-import java.util.ArrayDeque;
 import java.util.function.Function;
-
-import static decimal.Decimal.*;
 
 import decimal.Decimal;
 
