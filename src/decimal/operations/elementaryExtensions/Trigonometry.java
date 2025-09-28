@@ -417,6 +417,17 @@ public class Trigonometry {
 		return cos(angle, context).divide(sin(angle, context), context);
 	}
 
+    /**
+     * Computes the inverse sine (arcsine) of the given value.
+     *
+     * <p>Uses the Newton–Raphson method to solve {@code sin(y) = x}.
+     * The input {@code x} must lie within the interval [-1, 1].</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code sin(y) = x}
+     * @throws IllegalArgumentException if {@code x} is outside the interval [-1, 1]
+     */
 	public static Decimal arcsin(Decimal x, MathContext context) {
 		if (x.inInterval(ONE.negate(), ONE, BoundType.INCLUSIVE, BoundType.INCLUSIVE)) {
 			NewtonRaphsonProvider provider = 
