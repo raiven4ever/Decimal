@@ -100,7 +100,7 @@ public class Trigonometry {
 		 * <p>This method converges quickly and is efficient,
 		 * but the results may be less accurate at higher precisions.</p>
 		 */
-		static class Chudovsky { //fast but imprecise
+		static class Chudovsky {
 			/**
 			 * Constant {@code 10005}, used as part of the multiplier in the
 			 * Chudnovsky series for π.
@@ -171,7 +171,7 @@ public class Trigonometry {
 		 * very high precision, making it suitable for contexts
 		 * where accuracy is more important than speed.</p>
 		 */
-		static class BBP { //slower but insanely precise
+		static class BBP {
 
 			/**
 			 * Constant {@code 6}, used in the denominator terms of the BBP series.
