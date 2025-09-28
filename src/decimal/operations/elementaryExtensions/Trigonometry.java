@@ -100,13 +100,52 @@ public class Trigonometry {
          * but the results may be less accurate at higher precisions.</p>
          */
 		static class Chudovsky { //fast but imprecise
-			private static final Decimal D6 = D(10005);
-			private static final Decimal D5 = D(640320);
-			private static final Decimal D4 = THREE;
-			private static final Decimal D3 = D(545140134);
-			private static final Decimal D2 = D(13591409);
-			private static final Decimal D = D("4270934400");
+		    /**
+		     * Constant {@code 10005}, used as part of the multiplier in the
+		     * Chudnovsky series for π.
+		     */
+		    private static final Decimal D6 = D(10005);
 
+		    /**
+		     * Constant {@code 640320}, a key parameter in the Chudnovsky formula
+		     * affecting the convergence rate.
+		     */
+		    private static final Decimal D5 = D(640320);
+
+		    /**
+		     * Constant {@code 3}, representing the exponent applied to factorial
+		     * and polynomial terms in the series.
+		     */
+		    private static final Decimal D4 = THREE;
+
+		    /**
+		     * Constant {@code 545140134}, the coefficient applied to the series
+		     * index in the numerator.
+		     */
+		    private static final Decimal D3 = D(545140134);
+
+		    /**
+		     * Constant {@code 13591409}, the base term added to the numerator
+		     * in each series iteration.
+		     */
+		    private static final Decimal D2 = D(13591409);
+
+		    /**
+		     * Constant {@code 4270934400}, used in the denominator of the
+		     * multiplier for the Chudnovsky series.
+		     */
+		    private static final Decimal D = D("4270934400");
+
+		    /**
+		     * Computes π using the Chudnovsky series expansion.
+		     *
+		     * <p>This implementation uses factorial-based summation
+		     * and converges rapidly, making it suitable when speed
+		     * is prioritized over ultimate precision.</p>
+		     *
+		     * @param context the {@link MathContext} specifying precision and rounding
+		     * @return an approximation of π at the given precision
+		     */
 			private static Decimal pi(MathContext context) {
 				Decimal multiplier = D6.sqrt(context).divide(D, context);
 
