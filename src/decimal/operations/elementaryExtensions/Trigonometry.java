@@ -293,7 +293,18 @@ public class Trigonometry {
 
 	}
 
+    /**
+     * Computes the constant π with arbitrary precision.
+     *
+     * <p>Currently uses the Bailey–Borwein–Plouffe (BBP) series by default,
+     * which converges slowly but yields extremely high accuracy. The
+     * Chudnovsky algorithm is available but disabled here.</p>
+     *
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return an approximation of π at the given precision
+     */
 	public static Decimal pi(MathContext context) {
+//		return Pi.Chudovsky.pi(context);
 		return Pi.BBP.pi(context);
 	}
 
