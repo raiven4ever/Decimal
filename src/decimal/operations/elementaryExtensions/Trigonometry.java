@@ -1,13 +1,14 @@
 package decimal.operations.elementaryExtensions;
 
-import static decimal.Decimal.*;
+import static decimal.Decimal.HALF;
+import static decimal.Decimal.ONE;
+import static decimal.Decimal.TWO;
+import static decimal.Decimal.ZERO;
 
 import java.math.MathContext;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 
 import decimal.Decimal;
+import decimal.Decimal.BoundType;
 import decimal.helpers.FactorialSupplier;
 import decimal.helpers.NewtonRaphsonProvider;
 import decimal.helpers.Summation;
