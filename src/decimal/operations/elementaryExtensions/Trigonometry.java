@@ -463,6 +463,19 @@ public class Trigonometry {
 		throw new IllegalArgumentException(String.format("%s is outside of the domain of this function", x));
 	}
 
+    /**
+     * Computes the inverse tangent (arctangent) of the given value.
+     *
+     * <p>For |x| > 1, the identity
+     * {@code arctan(x) = sign(x) * (π/2) − arctan(1/x)}
+     * is applied to reduce the argument. Otherwise, the
+     * Newton–Raphson method is used to solve {@code tan(y) = x}
+     * within the interval [-π/2, π/2].</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code tan(y) = x}
+     */
 	public static Decimal arctan(Decimal x, MathContext context) {
 		Decimal pi = pi(context);
 		if (x.abs().greaterThan(ONE))
