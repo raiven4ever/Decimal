@@ -362,9 +362,18 @@ public class Trigonometry {
 			return Sin.maclaurin(angle, context);
 	}
 
-	//i have plans on tan having its own computation thing, instead of relying on sin/cos
-	//but this requires implementing a euler up/down numbers generator
-	//i have tested bernoulli numbers before and they're simplier to implement so i will use that
+    /**
+     * Computes the tangent of the given angle.
+     *
+     * <p>This implementation currently evaluates {@code tan(x)} as
+     * {@code sin(x) / cos(x)}. A dedicated implementation based on
+     * series expansions (e.g., using Bernoulli or Euler up/down numbers)
+     * may replace this in the future.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the tangent of {@code angle} with the given precision
+     */
 	public static Decimal tan(Decimal angle, MathContext context) {
 		return sin(angle, context).divide(cos(angle, context), context);
 	}
