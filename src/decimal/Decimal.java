@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
+import java.util.function.Function;
 
 import decimal.operations.ArithmeticBasics;
 import decimal.operations.elementaryExtensions.Exponentiation;
@@ -1226,9 +1227,10 @@ public class Decimal implements Comparable<Decimal>, Serializable{
      * @return the result of {@code this^2}
      */
 	public Decimal squared(MathContext context) {
-		if (isInteger())
-			return shiftLeft(1);
-		else
+		if (isInteger()) {
+			Decimal shiftLeft = shiftLeft(1);
+			return shiftLeft.isNegative() ? shiftLeft.negate() : shiftLeft;
+		} else
 			return pow(TWO, context);
 	}
 
@@ -1251,6 +1253,46 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	 */
 	public Decimal sqrt(MathContext context) {
 		return root(TWO, context);
+	}
+	
+	public Decimal plusOne() {
+		return add(ONE, MathContext.UNLIMITED);
+	}
+	
+	public Decimal minusOne() {
+		return subtract(ONE, MathContext.UNLIMITED);
+	}
+	
+	public Decimal min(Decimal other) {
+		return lessThan(other) ? this : other;
+	}
+	
+	public Decimal max(Decimal other) {
+		return greaterThan(other) ? this : other;
+	}
+	
+	public Decimal reciprocal(MathContext context) {
+		return ONE.divide(this, context);
+	}
+	
+	public Decimal echo() {
+		System.out.println(this);
+		return this;
+	}
+	
+	public Decimal echo(Function<Decimal, String> format) {
+		System.out.println(format.apply(this));
+		return this;
+	}
+	
+	public Decimal abs() {
+		return new Decimal(value.abs());
+	}
+	
+	public Decimal clamp(Decimal min, Decimal max) {
+		if (min.greaterThanOrEqualTo(max))
+			throw new IllegalArgumentException(String.format("min: %s has to be strictly less than max: %s", min, max));
+		return max(min).min(max);
 	}
 
 }
