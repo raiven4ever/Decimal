@@ -17,7 +17,6 @@ public class Trigonometry {
 	private static final Decimal THREE = D(3);
 
 	private Trigonometry() {
-		// TODO Auto-generated constructor stub
 		throw new AssertionError("No instances for you!");
 	}
 
