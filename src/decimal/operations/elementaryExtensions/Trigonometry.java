@@ -378,6 +378,15 @@ public class Trigonometry {
 		return sin(angle, context).divide(cos(angle, context), context);
 	}
 
+    /**
+     * Computes the cosecant of the given angle.
+     *
+     * <p>Defined as {@code csc(x) = 1 / sin(x)}.</p>
+     *
+     * @param angle   the angle in radians
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the cosecant of {@code angle} with the given precision
+     */
 	public static Decimal csc(Decimal angle, MathContext context) {
 		return ONE.divide(sin(angle, context), context);
 	}
