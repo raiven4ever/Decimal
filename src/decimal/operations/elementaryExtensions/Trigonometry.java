@@ -495,6 +495,15 @@ public class Trigonometry {
 		return solve;
 	}
 
+    /**
+     * Computes the inverse cosecant (arccosecant) of the given value.
+     *
+     * <p>Defined as {@code arccsc(x) = arcsin(1 / x)}.</p>
+     *
+     * @param x       the input value
+     * @param context the {@link MathContext} specifying precision and rounding
+     * @return the angle {@code y} such that {@code csc(y) = x}
+     */
 	public static Decimal arccsc(Decimal x, MathContext context) {
 		return arcsin(x.reciprocal(context), context);
 	}
