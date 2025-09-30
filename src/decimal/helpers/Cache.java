@@ -26,6 +26,13 @@ public class Cache {
 	 */
 	private Decimal[] cache;
 
+	/**
+	 * Creates a cache of the given size, initializing all entries
+	 * with the specified initial value.
+	 *
+	 * @param size         the number of entries to store
+	 * @param initialValue the value to fill the cache with initially
+	 */
 	public Cache(int size, Decimal initialValue) {
 		cache = new Decimal[size];
 		for (int i = 0; i < size; i++) {
