@@ -5,32 +5,33 @@ import java.util.function.Function;
 
 import decimal.Decimal;
 
-/**
- * Utility class for solving equations using the Newton–Raphson method
- * with arbitrary-precision {@link Decimal} values.
- *
- * <p>This class supports both basic and extended configurations:
- * <ul>
- *   <li>Providing only the target function {@code f} and its derivative
- *       {@code f'} for root-finding.</li>
- *   <li>Optionally supplying a clamping mechanism with bounds
- *       to constrain iteration results within a given interval.</li>
- * </ul>
- * </p>
- *
- * <p>To improve stability, the solver caches recent guesses and stops
- * iterating if results converge or start repeating.</p>
- *
- * @see Decimal
- * @see java.math.MathContext
- */
 public class NewtonRaphsonProvider {
 
-	private Function<Decimal, Decimal> f;
-	private Function<Decimal, Decimal> fPrime;
-	private Function<Decimal, Decimal> clampingMechanism;
-	private Decimal min;
-	private Decimal max;
+    /**
+     * The target function {@code f(x)} whose root is to be solved.
+     */
+    private Function<Decimal, Decimal> f;
+
+    /**
+     * The derivative of the target function {@code f′(x)}.
+     */
+    private Function<Decimal, Decimal> fPrime;
+
+    /**
+     * Optional clamping mechanism applied to each iteration step
+     * to enforce custom constraints on candidate values.
+     */
+    private Function<Decimal, Decimal> clampingMechanism;
+
+    /**
+     * Optional lower bound for valid iteration values.
+     */
+    private Decimal min;
+
+    /**
+     * Optional upper bound for valid iteration values.
+     */
+    private Decimal max;
 
 	public NewtonRaphsonProvider(Function<Decimal, Decimal> f, Function<Decimal, Decimal> fPrime) {
 		this.f = f;
