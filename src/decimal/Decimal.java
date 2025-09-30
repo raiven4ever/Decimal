@@ -1277,6 +1277,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return subtract(ONE, MathContext.UNLIMITED);
 	}
 
+	/**
+	 * Returns the smaller of this value and the specified value.
+	 *
+	 * @param other the value to compare against
+	 * @return {@code this} if it is less than {@code other},
+	 *         otherwise {@code other}
+	 */
 	public Decimal min(Decimal other) {
 		return lessThan(other) ? this : other;
 	}
