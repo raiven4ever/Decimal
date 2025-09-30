@@ -73,7 +73,6 @@ public class NewtonRaphsonProvider {
 
 	public NewtonRaphsonProvider(Function<Decimal, Decimal> f, Function<Decimal, Decimal> fPrime,
 			Function<Decimal, Decimal> clampingMechanism, Decimal min, Decimal max) {
-		super();
 		this.f = f;
 		this.fPrime = fPrime;
 		this.clampingMechanism = clampingMechanism;
