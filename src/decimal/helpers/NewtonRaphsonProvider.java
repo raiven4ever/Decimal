@@ -5,6 +5,30 @@ import java.util.function.Function;
 
 import decimal.Decimal;
 
+/**
+ * Utility class for solving equations using the Newton–Raphson method
+ * with arbitrary-precision {@link Decimal} values.
+ *
+ * <p>This implementation is intentionally lightweight and does not
+ * enforce advanced guardrails. The caller is responsible for ensuring
+ * that the provided derivative {@code f'} actually corresponds to the
+ * target function {@code f}. No validation or consistency checks are
+ * performed.</p>
+ *
+ * <p>Two usage modes are supported:
+ * <ul>
+ *   <li>Basic: provide {@code f} and {@code f'} only.</li>
+ *   <li>Extended: also provide an optional clamping mechanism and
+ *       interval bounds to constrain iteration results.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Iteration stops when successive guesses converge or repeat,
+ * as tracked by a small cache of previous values.</p>
+ *
+ * @see Decimal
+ * @see java.math.MathContext
+ */
 public class NewtonRaphsonProvider {
 
     /**
