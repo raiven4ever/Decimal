@@ -1288,6 +1288,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return lessThan(other) ? this : other;
 	}
 
+	/**
+	 * Returns the larger of this value and the specified value.
+	 *
+	 * @param other the value to compare against
+	 * @return {@code this} if it is greater than {@code other},
+	 *         otherwise {@code other}
+	 */
 	public Decimal max(Decimal other) {
 		return greaterThan(other) ? this : other;
 	}
