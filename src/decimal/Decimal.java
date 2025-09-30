@@ -1219,13 +1219,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal pow(Decimal exponent, MathContext context) {
 		return Exponentiation.exponentiation(this, exponent, context);
 	}
-	
-    /**
-     * Computes the square of this value.
-     *
-     * @param context the {@link MathContext} specifying precision and rounding
-     * @return the result of {@code this^2}
-     */
+
+	/**
+	 * Computes the square of this value.
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the result of {@code this^2}
+	 */
 	public Decimal squared(MathContext context) {
 		if (isInteger()) {
 			Decimal shiftLeft = shiftLeft(1);
@@ -1254,41 +1254,48 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 	public Decimal sqrt(MathContext context) {
 		return root(TWO, context);
 	}
-	
+
+	/**
+	 * Returns this value incremented by one.
+	 *
+	 * <p>Equivalent to {@code this + 1} with unlimited precision.</p>
+	 *
+	 * @return a new {@code Decimal} equal to {@code this + 1}
+	 */
 	public Decimal plusOne() {
 		return add(ONE, MathContext.UNLIMITED);
 	}
-	
+
 	public Decimal minusOne() {
 		return subtract(ONE, MathContext.UNLIMITED);
 	}
-	
+
 	public Decimal min(Decimal other) {
 		return lessThan(other) ? this : other;
 	}
-	
+
 	public Decimal max(Decimal other) {
 		return greaterThan(other) ? this : other;
 	}
-	
+
 	public Decimal reciprocal(MathContext context) {
 		return ONE.divide(this, context);
 	}
-	
+
 	public Decimal echo() {
 		System.out.println(this);
 		return this;
 	}
-	
+
 	public Decimal echo(Function<Decimal, String> format) {
 		System.out.println(format.apply(this));
 		return this;
 	}
-	
+
 	public Decimal abs() {
 		return new Decimal(value.abs());
 	}
-	
+
 	public Decimal clamp(Decimal min, Decimal max) {
 		if (min.greaterThanOrEqualTo(max))
 			throw new IllegalArgumentException(String.format("min: %s has to be strictly less than max: %s", min, max));
