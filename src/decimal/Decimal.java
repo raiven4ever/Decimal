@@ -1266,6 +1266,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return add(ONE, MathContext.UNLIMITED);
 	}
 
+	/**
+	 * Returns this value decremented by one.
+	 *
+	 * <p>Equivalent to {@code this - 1} with unlimited precision.</p>
+	 *
+	 * @return a new {@code Decimal} equal to {@code this - 1}
+	 */
 	public Decimal minusOne() {
 		return subtract(ONE, MathContext.UNLIMITED);
 	}
