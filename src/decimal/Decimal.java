@@ -1323,6 +1323,16 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return this;
 	}
 
+	/**
+	 * Prints this value to the standard output using a custom formatter,
+	 * then returns it unchanged.
+	 *
+	 * <p>The formatter function determines how the value is converted
+	 * to a string before printing.</p>
+	 *
+	 * @param format a function that formats this value as a {@link String}
+	 * @return this {@code Decimal} instance
+	 */
 	public Decimal echo(Function<Decimal, String> format) {
 		System.out.println(format.apply(this));
 		return this;
