@@ -1338,6 +1338,11 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return this;
 	}
 
+	/**
+	 * Returns the absolute value of this number.
+	 *
+	 * @return a new {@code Decimal} representing {@code |this|}
+	 */
 	public Decimal abs() {
 		return new Decimal(value.abs());
 	}
