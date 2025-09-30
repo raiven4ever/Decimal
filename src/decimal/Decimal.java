@@ -1299,6 +1299,14 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return greaterThan(other) ? this : other;
 	}
 
+	/**
+	 * Returns the multiplicative inverse of this value.
+	 *
+	 * <p>Defined as {@code 1 / this} with the specified precision and rounding.</p>
+	 *
+	 * @param context the {@link MathContext} specifying precision and rounding
+	 * @return the reciprocal of this value
+	 */
 	public Decimal reciprocal(MathContext context) {
 		return ONE.divide(this, context);
 	}
