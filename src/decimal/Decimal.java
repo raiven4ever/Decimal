@@ -1347,6 +1347,18 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return new Decimal(value.abs());
 	}
 
+	/**
+	 * Clamps this value to the given interval.
+	 *
+	 * <p>If this value is less than {@code min}, {@code min} is returned.
+	 * If it is greater than {@code max}, {@code max} is returned.
+	 * Otherwise, this value is returned unchanged.</p>
+	 *
+	 * @param min the lower bound (must be strictly less than {@code max})
+	 * @param max the upper bound (must be strictly greater than {@code min})
+	 * @return this value clamped to the interval [{@code min}, {@code max}]
+	 * @throws IllegalArgumentException if {@code min} is greater than or equal to {@code max}
+	 */
 	public Decimal clamp(Decimal min, Decimal max) {
 		if (min.greaterThanOrEqualTo(max))
 			throw new IllegalArgumentException(String.format("min: %s has to be strictly less than max: %s", min, max));
