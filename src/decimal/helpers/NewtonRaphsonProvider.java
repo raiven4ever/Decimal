@@ -57,6 +57,15 @@ public class NewtonRaphsonProvider {
 	 */
 	private Decimal max;
 
+	/**
+	 * Creates a Newton–Raphson provider with the given function and its derivative.
+	 *
+	 * <p>No validation is performed to confirm that {@code fPrime} is the
+	 * derivative of {@code f}; correctness is the caller’s responsibility.</p>
+	 *
+	 * @param f      the target function {@code f(x)}
+	 * @param fPrime the derivative function {@code f′(x)}
+	 */
 	public NewtonRaphsonProvider(Function<Decimal, Decimal> f, Function<Decimal, Decimal> fPrime) {
 		this.f = f;
 		this.fPrime = fPrime;
