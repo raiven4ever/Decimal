@@ -31,31 +31,31 @@ import decimal.Decimal;
  */
 public class NewtonRaphsonProvider {
 
-    /**
-     * The target function {@code f(x)} whose root is to be solved.
-     */
-    private Function<Decimal, Decimal> f;
+	/**
+	 * The target function {@code f(x)} whose root is to be solved.
+	 */
+	private Function<Decimal, Decimal> f;
 
-    /**
-     * The derivative of the target function {@code f′(x)}.
-     */
-    private Function<Decimal, Decimal> fPrime;
+	/**
+	 * The derivative of the target function {@code f′(x)}.
+	 */
+	private Function<Decimal, Decimal> fPrime;
 
-    /**
-     * Optional clamping mechanism applied to each iteration step
-     * to enforce custom constraints on candidate values.
-     */
-    private Function<Decimal, Decimal> clampingMechanism;
+	/**
+	 * Optional clamping mechanism applied to each iteration step
+	 * to enforce custom constraints on candidate values.
+	 */
+	private Function<Decimal, Decimal> clampingMechanism;
 
-    /**
-     * Optional lower bound for valid iteration values.
-     */
-    private Decimal min;
+	/**
+	 * Optional lower bound for valid iteration values.
+	 */
+	private Decimal min;
 
-    /**
-     * Optional upper bound for valid iteration values.
-     */
-    private Decimal max;
+	/**
+	 * Optional upper bound for valid iteration values.
+	 */
+	private Decimal max;
 
 	public NewtonRaphsonProvider(Function<Decimal, Decimal> f, Function<Decimal, Decimal> fPrime) {
 		this.f = f;
