@@ -18,6 +18,12 @@ import decimal.Decimal;
  */
 public class Cache {
 
+	/**
+	 * Internal storage array holding the cached {@link Decimal} values.
+	 *
+	 * <p>The array maintains a fixed size determined at construction,
+	 * with newer values placed at the front and older ones shifted back.</p>
+	 */
 	private Decimal[] cache;
 
 	public Cache(int size, Decimal initialValue) {
