@@ -40,6 +40,15 @@ public class Cache {
 		}
 	}
 
+	/**
+	 * Checks whether the given value is present in the cache.
+	 *
+	 * <p>Comparison is performed using {@code Decimal.equals()}.</p>
+	 *
+	 * @param value the value to search for
+	 * @return {@code true} if the value is found in the cache,
+	 *         {@code false} otherwise
+	 */
 	public boolean contains(Decimal value) {
 		for (Decimal x : cache) {
 			if (x.equals(value)) return true;
