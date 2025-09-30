@@ -1311,6 +1311,13 @@ public class Decimal implements Comparable<Decimal>, Serializable{
 		return ONE.divide(this, context);
 	}
 
+	/**
+	 * Prints this value to the standard output and returns it unchanged.
+	 *
+	 * <p>Useful for quick debugging or inline inspection of values.</p>
+	 *
+	 * @return this {@code Decimal} instance
+	 */
 	public Decimal echo() {
 		System.out.println(this);
 		return this;
