@@ -121,6 +121,17 @@ public class NewtonRaphsonProvider {
 		return clamp(result);
 	}
 
+	/**
+	 * Applies clamping logic to the given value.
+	 *
+	 * <p>If a custom clamping mechanism is provided along with bounds,
+	 * it is applied directly. Otherwise, if only {@code min} and
+	 * {@code max} are specified, the value is restricted to that interval.
+	 * If neither are provided, the value is returned unchanged.</p>
+	 *
+	 * @param value the value to clamp
+	 * @return the clamped value
+	 */
 	private Decimal clamp(Decimal value) {
 		return 
 				min != null && max != null && clampingMechanism != null ? clampingMechanism.apply(value) : 
